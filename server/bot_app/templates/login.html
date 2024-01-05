@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="welcome">
+        <h1>Welcome back!</h1>
+        </br>
+        <div class="headline">
+            Login below or <a href="/bot/signup">create an account</a></br></br>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="loginBox">
+                <div class="lblUsr">Username</div></br>
+                <input class="username" type="text" name="username" enterkeyhint="Enter your username"/> </br></br>
+                <div class="lblPwd">Password</div></br>
+                <input class="password" name="password" type="password"/></br></br>
+                <button class="signin" name="signin">Sign In</button>
+            </div>
+            {% if messages %}
+            <div class="answerbox">
+                {% for message in messages %}
+                <br/>{{ message }}<br/>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>

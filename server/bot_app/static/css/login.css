@@ -1,0 +1,75 @@
+body{
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center; /* Vertical centering */
+    min-height: 100vh; /* Ensure the container spans the full viewport height */
+    background-color: #f0f0f0; /* Optional: Background color for the body */
+}
+
+div.welcome{
+    background-color: #fff; /* Optional: Background color for the centered div */
+    padding: 20px;
+    text-align: center; /* Center text horizontally */
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+h1{
+    text-align: left;
+    color: #545F71;
+}
+div.headline{
+    margin: auto;
+    text-align: left;
+    color: #545F71;
+    font-size: 16px;
+}
+div.loginBox{
+    margin: auto;
+    text-align: left;
+    color: #545F71;
+}
+div.lblUsr{
+    color: #545F71;
+    width: 80%;
+    font-size: 16px;
+}
+div.lblPwd{
+    color: #545F71;
+    width: 80%;
+    font-size: 16px;
+}
+
+.username{
+    width: 80%;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.password{
+    width: 80%;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.signin{
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.answerbox{
+    text-align: left;
+    color: #545F71;
+}
