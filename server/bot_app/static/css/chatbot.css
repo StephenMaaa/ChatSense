@@ -35,14 +35,14 @@ body {
   max-height: 100vh;
   padding-bottom: 150px;
 }
-:where(.chat-container, textarea)::-webkit-scrollbar {
+:where(.chat-container, input)::-webkit-scrollbar {
   width: 6px;
 }
-:where(.chat-container, textarea)::-webkit-scrollbar-track {
+:where(.chat-container, input)::-webkit-scrollbar-track {
   background: var(--incoming-chat-bg);
   border-radius: 25px;
 }
-:where(.chat-container, textarea)::-webkit-scrollbar-thumb {
+:where(.chat-container, input)::-webkit-scrollbar-thumb {
   background: var(--icon-color);
   border-radius: 25px;
 }
@@ -196,6 +196,21 @@ span.material-symbols-rounded {
   color: var(--icon-color);
 }
 .typing-textarea button {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  border-radius: 4px;
+  font-size: 1.35rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-color);
+  user-select: none;
+  cursor: pointer;
+}
+input#query-box.chat-input {
+  width: 826px; 
+}
+.typing-textarea button {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -249,7 +264,7 @@ span.material-symbols-rounded {
     width: 45px;
     margin-left: 5px;
   }
-  button.send-button span.material-symbols-rounded {
+  button.material-symbols-rounded span.material-symbols-rounded {
     font-size: 1.25rem!important;
   }
 }
