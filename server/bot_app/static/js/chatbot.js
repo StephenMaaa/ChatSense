@@ -68,8 +68,10 @@ const copyResponse = (copyBtn) => {
 const showTypingAnimation = () => {
     // Display the typing animation and call the getChatResponse function
     //                         <img src="{% static 'chatbot.jpg' %}" alt="chatbot-img">
+    // <img src="{% static 'images/chatbot.jpg' %}" alt="chatbot-img"></img>
     const html = `<div class="chat-content">
                     <div class="chat-details">
+                        <img src="static/images/chatbot.jpg" alt="chatbot-img"></img>
                         <div class="typing-animation">
                             <div class="typing-dot" style="--delay: 0.2s"></div>
                             <div class="typing-dot" style="--delay: 0.3s"></div>
@@ -92,10 +94,11 @@ const handleOutgoingChat = () => {
     if(!userText) return; // If chatInput is empty return from here
     // Clear the input field and reset its height
     // document.getElementById('query-box').value = "";
-    // <img src="../images/user.jpg" alt="user-img">
-    chatInput.style.height = `${initialInputHeight}px`;
+    // chatInput.style.height = `${initialInputHeight}px`;
+    //                         <img src="{% static 'images/user.jpg' %}" alt="user-img">
     const html = `<div class="chat-content">
                     <div class="chat-details">
+                        <img src="static/images/user.jpg" alt="user-img">
                         <p>${userText}</p>
                     </div>
                 </div>`;
