@@ -206,6 +206,7 @@ span.material-symbols-rounded {
   color: var(--icon-color);
   user-select: none;
   cursor: pointer;
+  font-size: 1.25rem!important;
 }
 input#query-box.chat-input {
   width: 826px; 

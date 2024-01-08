@@ -30,6 +30,10 @@ def homepage(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
     data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
+    data = list(data.values())
+    print(len(data))
+    for item in data: 
+        print("item")
     return render(request, 'index.html', {'data': data})
     # return render(request, 'index.html')
 
