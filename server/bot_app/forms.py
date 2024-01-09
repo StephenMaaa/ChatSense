@@ -13,3 +13,6 @@ class SignInForm(forms.Form):
 class SignUpForm(forms.Form):
     username = forms.CharField(max_length=20)
     password = forms.CharField(max_length=10)
+
+class ThemeForm(forms.ModelForm):
+    theme = forms.CharField(max_length=20)

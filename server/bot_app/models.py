@@ -29,3 +29,11 @@ class UserQueries(models.Model):
     def __str__(self):
         return self.question_text
         # , self.user_id, self.timestamp, self.query_response
+    
+class Theme(models.Model):
+    # Define your model fields here
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+    theme = models.CharField(max_length=10, choices=[('light_mode', 'light_mode'), ('dark_mode', 'dark_mode')], default='light_mode')
+
+    def __str__(self):
+        return self.theme

@@ -6,8 +6,16 @@ const deleteButton = document.querySelector("#delete-btn");
 let userText = null;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // load theme 
+    var theme; 
+    $.get('get_theme', function(data) {
+        theme = data.theme;
+        console.log('Current Theme:', theme); 
+        document.body.classList.toggle("light-mode", theme === "light_mode");
+        themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
+    });
+
     // Retrieve the data_list from the Django template context
-    // var chat = {{ data }};  // Assume data_list is defined in the template context 
     var chat = JSON.parse(document.getElementById('data').textContent);
     // console.log(data[0]); 
     // data = JSON.parse(data);
@@ -53,18 +61,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// const loadDataFromLocalstorage = () => {
-//     // Load saved chats and theme from local storage and apply/add on the page
-//     const themeColor = localStorage.getItem("themeColor");
-//     document.body.classList.toggle("light-mode", themeColor === "light_mode");
-//     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
-//     const defaultText = `<div class="default-text">
-//                             <h1>ChatGPT Clone</h1>
-//                             <p>Start a conversation and explore the power of AI.<br> Your chat history will be displayed here.</p>
-//                         </div>`
-//     chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
-//     chatContainer.scrollTo(0, chatContainer.scrollHeight); // Scroll to bottom of the chat container
-// }
+const fetchTheme = async () => {
+    try{
+        // const loadDiv = document.getElementById('loadingDiv');
+        // loadDiv.style.display = 'block';
+        const form = document.getElementById('form-query');
+        const formData = new FormData(form);
+        const response = await fetch('fetch_response', {
+            method:'POST',
+            body: formData,
+        });
+        const chat_data = await response.json();
+        pElement.textContent = chat_data.query_response; 
+        // handleOutgoingChat(); 
+        form.reset();
+        // location.reload(); 
+    }catch(error){
+        console.error('There was a error with fetching the response : ', error);
+        pElement.classList.add("error");
+        pElement.textContent = "Oops! Something went wrong while retrieving the response. Please try again.";
+        return ''; 
+    }
+
+    // Remove the typing animation, append the paragraph element and save the chats to local storage
+    incomingChatDiv.querySelector(".typing-animation").remove();
+    incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
+    localStorage.setItem("all-chats", chatContainer.innerHTML);
+    chatContainer.scrollTo(0, chatContainer.scrollHeight);
+}
+
+const loadDataFromLocalstorage = () => {
+    // Load saved chats and theme from local storage and apply/add on the page
+    const themeColor = localStorage.getItem("themeColor");
+    document.body.classList.toggle("light-mode", themeColor === "light_mode");
+    themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
+    const defaultText = `<div class="default-text">
+                            <h1>ChatGPT Clone</h1>
+                            <p>Start a conversation and explore the power of AI.<br> Your chat history will be displayed here.</p>
+                        </div>`
+    chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
+    chatContainer.scrollTo(0, chatContainer.scrollHeight); // Scroll to bottom of the chat container
+}
 
 const createChatElement = (content, className) => {
     // Create new div and apply chat, specified class and set html content of div
@@ -161,18 +198,36 @@ const handleOutgoingChat = () => {
 
 deleteButton.addEventListener("click", () => {
     // Remove the chats from local storage and call loadDataFromLocalstorage function
-    if(confirm("Are you sure you want to delete all the chats?")) {
-        localStorage.removeItem("all-chats");
-        loadDataFromLocalstorage();
-    }
+    // if(confirm("Are you sure you want to delete all the chats?")) {
+    //     localStorage.removeItem("all-chats");
+    //     loadDataFromLocalstorage();
+    // }
+    $.post('delete_chats', function(data) {
+        console.log("Successfully delete!"); 
+        location.reload(); 
+        // Optionally, you can perform additional actions after clearing the history
+    });
 });
 
 themeButton.addEventListener("click", () => {
     // Toggle body's class for the theme mode and save the updated theme to the local storage 
     document.body.classList.toggle("light-mode");
     localStorage.setItem("themeColor", themeButton.innerText);
+    updateTheme(themeButton.innerText); 
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
+    // updateTheme(themeButton.innerText); 
 });
+
+function updateTheme(theme) {
+    $.post('update_theme', { theme: theme }, function(data) {
+        if (data.success) {
+            console.log('Theme updated successfully');
+            // You can perform additional actions upon successful update
+        } else {
+            console.error('Failed to update theme');
+        }
+    });
+}
 
 const initialInputHeight = chatInput.scrollHeight;
 chatInput.addEventListener("input", () => {   

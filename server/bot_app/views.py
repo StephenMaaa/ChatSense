@@ -6,10 +6,10 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # custom imports
-from .forms import QueryForm, SignInForm, SignUpForm
+from .forms import QueryForm, SignInForm, SignUpForm, ThemeForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from .models import User, SessionDetails, UserQueries
+from .models import User, SessionDetails, UserQueries, Theme
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -35,7 +35,54 @@ def homepage(request):
     for item in data: 
         print("item")
     return render(request, 'index.html', {'data': data})
-    # return render(request, 'index.html')
+
+@csrf_exempt
+def updateTheme(request):
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    theme = request.POST.get('theme')
+    user_preference, created = Theme.objects.get_or_create(user_id=user)
+    user_preference.theme = theme
+    print(theme)
+    user_preference.save()
+    return JsonResponse({'success': True}) 
+
+@csrf_exempt
+def getTheme(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    user_preference, created = Theme.objects.get_or_create(user_id=user)
+    theme = user_preference.theme
+    return JsonResponse({'theme': theme})
+
+@csrf_exempt
+def deleteChats(request):
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    UserQueries.objects.filter(user_id=user).delete()
+    return JsonResponse({'message': 'History cleared successfully'})
+
+# def getTheme(request):
+#     username = request.session["username"]
+#     user = User.objects.get(name=username)
+#     theme_color = "light_mode" 
+#     try:
+#         theme_color = Theme.objects.get(user_id=user).values("theme")
+#     except Theme.DoesNotExist:
+#         theme = Theme(user_id=user, theme='light_mode')
+#         theme.save()
+
+#     # if request.method == "POST":
+#     #     form = ThemeForm(request.POST, instance=user_preference)
+#     #     if form.is_valid():
+#     #         form.save()
+#     #         return redirect('some_redirect_view')  # Redirect to a suitable view
+#     # else:
+#     #     form = ThemePreferenceForm(instance=user_preference)
+#     theme_resp = {
+#         "theme_color": theme_color
+#     }
+#     return JsonResponse(theme_resp)
 
 
 # Whenever user clicks requests for a response, the server will send a prompt to the LLM model. And return the response to the html page.
