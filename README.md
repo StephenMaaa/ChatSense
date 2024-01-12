@@ -1,25 +1,52 @@
-# django-chat-bot-llama
+# Llama 2 + CLIP based Chatbot
 
+## Demo 
+[PENDING]
 
+## Features
 
-## Getting started
+- Chat completions powered by Llama 2 
+- ChatGPT-style GUI 
+- Store user's chat history in local storage 
+ 
+## To-Do
 
-## Name
-This is a simple django chat bot that has basic level of functionality similar to CHAT-GPT
+- [ ] Integrate CLIP model into the app (front-end, backend) 
+- [ ] Scrolling sidebar
+- [ ] Multiple chats 
+- [ ] PENDING 
 
-## Installation
-Create a conda environment using chatserver export file.
+## Setup
 
-Make sure you have a llama 2 model downloaded into your system from huggingface.
+1. Clone the repository
 
-The export file has all the list of packages that are required
+```
+git clone https://github.com/StephenMaaa/GPT.git
+```
+
+2. Install client dependencies
+
+```
+cd GPT
+pip install -r requirements.txt
+```
+
+3. Download weights of Llama 2 from Huggingface 
+
+URL: https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/tree/main
+
+```
+llama-2-7b-chat.Q4_K_M.gguf 
+```
+
+4. Choose and download an image dataset for CLIP 
+
+MS COCO URL: https://cocodataset.org/#download 
 
 ## Usage
-Run the following command
-> python manage.py runserver 8080
+1. Start the app 
+```
+python manage.py runserver
+```
 
 ## License
-Use however you want to 
-
-## Project status
-Development has been slowed down currently.
