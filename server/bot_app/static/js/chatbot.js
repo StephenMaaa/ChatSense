@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // var dataListElement = document.getElementById("dataList");
 
     // Populate the <ul> with list items using JavaScript 
-    if (chat != null) {
+    if (chat != null && chat.length > 0) {
         chat.forEach(function(item) {
             console.log("running"); 
     
@@ -56,23 +56,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const incomingChatDiv = createChatElement(response_html, "incoming");
             chatContainer.appendChild(incomingChatDiv);
             chatContainer.scrollTo(0, chatContainer.scrollHeight);
-        });
+        }); 
         chat = null; 
+    } else {
+        const defaultText = `<div class="default-text">
+            <h1>Llama 2</h1>
+            <p>Start a conversation and explore the power of gen-AI.</p>
+        </div>`
+        chatContainer.innerHTML = defaultText; 
+        chatContainer.scrollTo(0, chatContainer.scrollHeight); 
     }
 });
-
-const loadDataFromLocalstorage = () => {
-    // Load saved chats and theme from local storage and apply/add on the page
-    const themeColor = localStorage.getItem("themeColor");
-    document.body.classList.toggle("light-mode", themeColor === "light_mode");
-    themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
-    const defaultText = `<div class="default-text">
-                            <h1>ChatGPT Clone</h1>
-                            <p>Start a conversation and explore the power of AI.<br> Your chat history will be displayed here.</p>
-                        </div>`
-    chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
-    chatContainer.scrollTo(0, chatContainer.scrollHeight); // Scroll to bottom of the chat container
-}
 
 const createChatElement = (content, className) => {
     // Create new div and apply chat, specified class and set html content of div

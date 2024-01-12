@@ -31,7 +31,7 @@ def build_embeddings(model, preprocess, data_dir, save_dir):
         pickle.dump(data, f, protocol=4) 
 
 
-def build_index(file_dir): 
+def build_index(file_dir, save_dir="vector.index"): 
     with open(file_dir, 'rb') as f:
         data = pickle.load(f) 
 
@@ -42,7 +42,7 @@ def build_index(file_dir):
     index.add(embeddings) 
 
     # store the index locally
-    faiss.write_index(index, "vector.index") 
+    faiss.write_index(index, save_dir) 
 
 def text_search(model, preprocess, index_dir, model_input, input_type, top_k): 
     index  = faiss.read_index(index_dir) 
