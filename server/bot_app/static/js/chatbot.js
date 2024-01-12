@@ -61,35 +61,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-const fetchTheme = async () => {
-    try{
-        // const loadDiv = document.getElementById('loadingDiv');
-        // loadDiv.style.display = 'block';
-        const form = document.getElementById('form-query');
-        const formData = new FormData(form);
-        const response = await fetch('fetch_response', {
-            method:'POST',
-            body: formData,
-        });
-        const chat_data = await response.json();
-        pElement.textContent = chat_data.query_response; 
-        // handleOutgoingChat(); 
-        form.reset();
-        // location.reload(); 
-    }catch(error){
-        console.error('There was a error with fetching the response : ', error);
-        pElement.classList.add("error");
-        pElement.textContent = "Oops! Something went wrong while retrieving the response. Please try again.";
-        return ''; 
-    }
-
-    // Remove the typing animation, append the paragraph element and save the chats to local storage
-    incomingChatDiv.querySelector(".typing-animation").remove();
-    incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
-    localStorage.setItem("all-chats", chatContainer.innerHTML);
-    chatContainer.scrollTo(0, chatContainer.scrollHeight);
-}
-
 const loadDataFromLocalstorage = () => {
     // Load saved chats and theme from local storage and apply/add on the page
     const themeColor = localStorage.getItem("themeColor");
