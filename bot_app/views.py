@@ -19,7 +19,7 @@ import threading
 session = SessionStore()
 
 # added to load gguf llama2 models
-llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/server", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama")
+llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama")
 
 # used to block access while handling request for a query
 # lock = threading.Lock()
