@@ -1,3 +1,33 @@
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+:root {
+  --text-color: #FFFFFF;
+  --icon-color: #ACACBE;
+  --icon-hover-bg: #5b5e71;
+  --placeholder-color: #dcdcdc;
+  --outgoing-chat-bg: #343541;
+  --incoming-chat-bg: #444654;
+  --outgoing-chat-border: #343541;
+  --incoming-chat-border: #444654;
+}
+
+.light-mode {
+    --text-color: #343541;
+    --icon-color: #a9a9bc;
+    --icon-hover-bg: #f1f1f3;
+    --placeholder-color: #6c6c6c;
+    --outgoing-chat-bg: #FFFFFF;
+    --incoming-chat-bg: #F7F7F8;
+    --outgoing-chat-border: #FFFFFF;
+    --incoming-chat-border: #D9D9E3;
+}
+
 body{
     font-family: 'Times New Roman', Times, serif;
     margin: 0;
@@ -6,10 +36,30 @@ body{
     justify-content: center; /* Horizontal centering */
     align-items: center; /* Vertical centering */
     min-height: 100vh; /* Ensure the container spans the full viewport height */
-    background-color: #f0f0f0; /* Optional: Background color for the body */
+    background: var(--outgoing-chat-bg);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+div.appHeader{
+    width: 400px;
+    height: 100px;
+    text-align: center;
+}
+
+h1{
+    margin: auto;
+    text-align: left;
+    color: #545F71;
+    font-size: 2.3rem;
 }
 
 div.welcome{
+    /* width: 100px;
+    height: 80px; */
     background-color: #fff; /* Optional: Background color for the centered div */
     padding: 20px;
     text-align: center; /* Center text horizontally */
@@ -17,16 +67,14 @@ div.welcome{
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 }
-h1{
-    text-align: left;
-    color: #545F71;
-}
+
 div.headline{
     margin: auto;
     text-align: left;
     color: #545F71;
     font-size: 16px;
 }
+
 div.loginBox{
     margin: auto;
     text-align: left;
@@ -34,17 +82,17 @@ div.loginBox{
 }
 div.lblUsr{
     color: #545F71;
-    width: 80%;
+    width: 100%;
     font-size: 16px;
 }
 div.lblPwd{
     color: #545F71;
-    width: 80%;
+    width: 100%;
     font-size: 16px;
 }
 
 .username{
-    width: 80%;
+    width: 100%;
     border: 1px solid #ccc;
     padding: 10px 20px;
     border-radius: 5px;
@@ -52,7 +100,7 @@ div.lblPwd{
 }
 
 .password{
-    width: 80%;
+    width: 100%;
     border: 1px solid #ccc;
     padding: 10px 20px;
     border-radius: 5px;
