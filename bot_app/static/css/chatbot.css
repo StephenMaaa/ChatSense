@@ -195,6 +195,9 @@ span.material-symbols-rounded {
   justify-content: center;
   color: var(--icon-color);
 }
+#fileInput {
+  display: none;
+}
 .typing-textarea button {
   width: 55px;
   height: 55px;

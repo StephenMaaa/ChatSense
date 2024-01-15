@@ -16,3 +16,6 @@ class SignUpForm(forms.Form):
 
 class ThemeForm(forms.ModelForm):
     theme = forms.CharField(max_length=20)
+
+class ImageForm(forms.Form):
+    image = forms.ImageField()

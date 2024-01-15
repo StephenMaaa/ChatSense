@@ -3,6 +3,7 @@ const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
+const changeButton = document.querySelector("#change-btn");
 let userText = null;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -183,6 +184,18 @@ themeButton.addEventListener("click", () => {
     // updateTheme(themeButton.innerText); 
 });
 
+changeButton.addEventListener("click", () => {
+    var model = changeButton.getAttribute("data-info"); 
+    console.log(model); 
+
+    // switch models 
+    if (model === "clip") {
+        window.location.href = "llama"; 
+    } else {
+        window.location.href = "clip"; 
+    }
+}); 
+
 function updateTheme(theme) {
     $.post('update_theme', { theme: theme }, function(data) {
         if (data.success) {
@@ -200,6 +213,10 @@ chatInput.addEventListener("input", () => {
     chatInput.style.height =  `${initialInputHeight}px`;
     chatInput.style.height = `${chatInput.scrollHeight}px`;
 });
+
+function triggerFileInput() {
+    document.getElementById('fileInput').click();
+}
 
 window.onload = function(){
     // handleOutgoingChat(); 

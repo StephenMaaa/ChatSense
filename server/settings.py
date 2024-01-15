@@ -132,6 +132,11 @@ STATIC_URL = '/static/'
 # STATIC_ROOT = "http://127.0.0.1:8000/static/"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Define the base URL to serve media files.
+MEDIA_URL = '/media/'
+
 # if __name__ == "__main__":
 #     print(BASE_DIR)
 #     print(STATICFILES_DIRS) 

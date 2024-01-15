@@ -6,10 +6,10 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # custom imports
-from .forms import QueryForm, SignInForm, SignUpForm, ThemeForm
+from .forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from .models import User, SessionDetails, UserQueries, Theme
+from .models import User, SessionDetails, UserQueries, Theme, ImageQueries
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -26,7 +26,7 @@ llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-
 
 
 # Displays the previous queries asked by the user.
-def homepage(request):
+def llamaHomepage(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
     data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
@@ -35,6 +35,22 @@ def homepage(request):
     for item in data: 
         print("item")
     return render(request, 'index.html', {'data': data})
+
+def clipHomepage(request): 
+    return render(request, 'clip.html')
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            # save the image to the database
+            image_model = ImageQueries(image=request.FILES['image'])
+            image_model.save()
+            # return redirect('clipHomepage')  # redirect to a success page
+    # else:
+    #     form = ImageForm()
+    
+    # return render(request, 'upload_image.html', {'form': form})
 
 @csrf_exempt
 def updateTheme(request):
@@ -145,7 +161,7 @@ def signin(request):
                 user: User = User.objects.get(name=username)
                 if password == user.password:
                     createsession(request, user, username)
-                    return redirect(homepage)
+                    return redirect(llamaHomepage)
                 else:
                     messages.warning(request, 'Incorrect Password')
             except:
@@ -172,6 +188,6 @@ def signup(request):
             user = User(name=username, password=password, role='user')
             user.save()
             createsession(request=request, user=user, username=username)
-            return redirect(homepage)
+            return redirect(llamaHomepage)
 
     return render(request, 'signup.html')

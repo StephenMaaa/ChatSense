@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Google Fonts Link For Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     {{ data|json_script:"data" }}
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
@@ -19,17 +20,19 @@
     <!-- Typing container -->
     <div class="typing-container">
       <div class="typing-content">
-        <form method="post" id="form-query">
+        <form method="post" id="form-query" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="typing-textarea">
-                <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here" required>
+                <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here">
+                <input type="file" name="image" id="fileInput" accept="image/*">
                 <button class="material-symbols-rounded" name="btnAsk" id="queryBtn" type="submit">send</button>
             </div>
         </form>
         <div class="typing-controls">
+          <span id="file-btn" class="material-symbols-rounded" onclick="triggerFileInput()">upload</span>
           <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
           <span id="delete-btn" class="material-symbols-rounded">delete</span>
-          <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span>
+          <span id="change-btn" class="material-symbols-rounded" data-info="clip">change_circle</span>
       </div>
     </div>
   </body>
