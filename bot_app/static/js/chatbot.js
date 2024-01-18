@@ -17,16 +17,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Retrieve the data_list from the Django template context
-    var chat = JSON.parse(document.getElementById('data').textContent);
-    // console.log(data[0]); 
-    // data = JSON.parse(data);
-    // console.log(data[1]); 
-    // console.log(chat[0]); 
+    var chat = JSON.parse(document.getElementById('data').textContent); 
 
     // Get the <ul> element by its id
     // var dataListElement = document.getElementById("dataList");
 
-    // Populate the <ul> with list items using JavaScript 
+    // load chat history 
+    var model = changeButton.getAttribute("data-info"); 
+    if (model === "llama") {
+        console.log("Loading Llama")
+        loadLlamaChatHistory(chat); 
+    } else {
+        console.log("Loading CLIP"); 
+        loadCLIPChatHistory(chat); 
+    }
+});
+
+function loadLlamaChatHistory(chat) {
+    // populate chat history 
     if (chat != null && chat.length > 0) {
         chat.forEach(function(item) {
             console.log("running"); 
@@ -34,12 +42,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // fetch prompt 
             const prompt_html = `<div class="chat-content">
                             <div class="chat-details">
-                                <img src="static/images/user.jpg" alt="user-img">
+                                <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
                                 <p>${item.question_text}</p>
                             </div>
                         </div>`;
     
-            // Create an outgoing chat div with user's message and append it to chat container
+            // create an outgoing chat div with user's message and append it to chat container
             const outgoingChatDiv = createChatElement(prompt_html, "outgoing");
             chatContainer.querySelector(".default-text")?.remove();
             chatContainer.appendChild(outgoingChatDiv);
@@ -48,12 +56,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // fetch response 
             const response_html = `<div class="chat-content">
                             <div class="chat-details">
-                                <img src="static/images/chatbot.jpg" alt="chatbot-img"></img>
+                                <img src="static/images/chatbot.jpg" id="chat-profile" alt="chatbot-img"></img>
                                 <p>${item.query_response}</p>
                             </div>
                             <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
                         </div>`;
-            // Create an incoming chat div with typing animation and append it to chat container
+            // create an incoming chat div with typing animation and append it to chat container
             const incomingChatDiv = createChatElement(response_html, "incoming");
             chatContainer.appendChild(incomingChatDiv);
             chatContainer.scrollTo(0, chatContainer.scrollHeight);
@@ -67,7 +75,73 @@ document.addEventListener('DOMContentLoaded', function() {
         chatContainer.innerHTML = defaultText; 
         chatContainer.scrollTo(0, chatContainer.scrollHeight); 
     }
-});
+}
+
+function loadCLIPChatHistory(chat) {
+    // populate chat history  
+    if (chat != null && chat.length > 0) {
+        chat.forEach(function(item) {
+            console.log("running"); 
+    
+            // fetch prompt 
+            var prompt_html = `<div class="chat-content">
+                            <div class="chat-details">
+                                <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+                            </div>
+                        </div>`; 
+    
+            // create an outgoing chat div with user's message and append it to chat container
+            const outgoingChatDiv = createChatElement(prompt_html, "outgoing"); 
+
+            // add user input 
+            if (item.image) {
+                console.log('Image:', item.image); 
+    
+                // display the image 
+                var imgElement = document.createElement('img');
+                imgElement.src = "media/" + item.image;
+                imgElement.id = "chat-image"; 
+                outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
+            } else {
+                var pElement = document.createElement("p"); 
+                pElement.textContent = item.question_text; 
+                outgoingChatDiv.querySelector(".chat-details").appendChild(pElement); 
+            }
+            chatContainer.querySelector(".default-text")?.remove();
+            chatContainer.appendChild(outgoingChatDiv);
+            chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+    
+            // fetch response 
+            const response_html = `<div class="chat-content">
+                            <div class="chat-details">
+                                <img src="static/images/chatbot.jpg" id="chat-profile" alt="chatbot-img"></img>
+                            </div>
+                            <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
+                        </div>`; 
+
+            // create an incoming chat div with typing animation and append it to chat container
+            const incomingChatDiv = createChatElement(response_html, "incoming"); 
+
+            // add response 
+            console.log('Image response:', item.image_response); 
+            var imgElement = document.createElement('img');
+            imgElement.src = "media/" + item.image_response; 
+            imgElement.id = "chat-image"; 
+            incomingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
+
+            chatContainer.appendChild(incomingChatDiv); 
+            chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+        }); 
+        chat = null; 
+    } else {
+        const defaultText = `<div class="default-text">
+            <h1>CLIP</h1>
+            <p>Start a conversation or upload an image to explore the power of CLIP.</p>
+        </div>`
+        chatContainer.innerHTML = defaultText; 
+        chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+    }
+}
 
 const createChatElement = (content, className) => {
     // Create new div and apply chat, specified class and set html content of div
@@ -79,21 +153,43 @@ const createChatElement = (content, className) => {
 
 const fetchResponse = async (incomingChatDiv) => {
     // handleOutgoingChat(); 
-    const pElement = document.createElement("p");
+    var model = changeButton.getAttribute("data-info"); 
     try{
         // const loadDiv = document.getElementById('loadingDiv');
         // loadDiv.style.display = 'block';
         const form = document.getElementById('form-query');
         const formData = new FormData(form);
-        const response = await fetch('fetch_response', {
-            method:'POST',
-            body: formData,
-        });
-        const chat_data = await response.json();
-        pElement.textContent = chat_data.query_response; 
-        // handleOutgoingChat(); 
+        
+        // fetch response from Llama2/CLIP 
+        var response; 
+        var element; 
+        if (model === "llama") {
+            response = await fetch('fetch_response', {
+                method:'POST',
+                body: formData,
+            });
+
+            console.log(response)
+            // create response element 
+            element = document.createElement("p"); 
+            const chat_data = await response.json();
+            element.textContent = chat_data.query_response; 
+        } else {
+            response = await fetch('fetch_image', {
+                method:'POST',
+                body: formData,
+            });
+
+            console.log(response)
+            // create response element 
+            element = document.createElement("img"); 
+            const chat_data = await response.json();
+            element.src = chat_data.image_response; 
+            element.id = "chat-image"; 
+        }
+
+        // reset form 
         form.reset();
-        // location.reload(); 
     }catch(error){
         console.error('There was a error with fetching the response : ', error);
         pElement.classList.add("error");
@@ -103,17 +199,25 @@ const fetchResponse = async (incomingChatDiv) => {
 
     // Remove the typing animation, append the paragraph element and save the chats to local storage
     incomingChatDiv.querySelector(".typing-animation").remove();
-    incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
-    localStorage.setItem("all-chats", chatContainer.innerHTML);
+    incomingChatDiv.querySelector(".chat-details").appendChild(element);
+    // localStorage.setItem("all-chats", chatContainer.innerHTML);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 }
 
 const copyResponse = (copyBtn) => {
-    // Copy the text content of the response to the clipboard
-    const reponseTextElement = copyBtn.parentElement.querySelector("p");
-    navigator.clipboard.writeText(reponseTextElement.textContent);
+    // Copy the text content of the response to the clipboard 
+    var model = changeButton.getAttribute("data-info"); 
+    var responseElement; 
+
+    if (model === "llama") {
+        responseElement = copyBtn.parentElement.querySelector("p"); 
+        navigator.clipboard.writeText(responseElement.textContent); 
+    } else {
+        responseElement = copyBtn.parentElement.querySelector("img:nth-child(2)"); 
+        navigator.clipboard.writeText(responseElement.src);
+    }
     copyBtn.textContent = "done";
-    setTimeout(() => copyBtn.textContent = "content_copy", 1000);
+    setTimeout(() => copyBtn.textContent = "content_copy", 1000); 
 }
 
 const showTypingAnimation = () => {
@@ -122,7 +226,7 @@ const showTypingAnimation = () => {
     // <img src="{% static 'images/chatbot.jpg' %}" alt="chatbot-img"></img>
     const html = `<div class="chat-content">
                     <div class="chat-details">
-                        <img src="static/images/chatbot.jpg" alt="chatbot-img"></img>
+                        <img src="static/images/chatbot.jpg" id="chat-profile" alt="chatbot-img"></img>
                         <div class="typing-animation">
                             <div class="typing-dot" style="--delay: 0.2s"></div>
                             <div class="typing-dot" style="--delay: 0.3s"></div>
@@ -140,22 +244,41 @@ const showTypingAnimation = () => {
 
 const handleOutgoingChat = () => {
     userText = document.getElementById('query-box').value; 
-    // userText = chatInput.value.trim(); // Get chatInput value and remove extra spaces
-    console.log(userText); 
-    if(!userText) return; // If chatInput is empty return from here
-    // Clear the input field and reset its height
-    // document.getElementById('query-box').value = "";
-    // chatInput.style.height = `${initialInputHeight}px`;
-    //                         <img src="{% static 'images/user.jpg' %}" alt="user-img">
-    const html = `<div class="chat-content">
+    // if(!userText) return; // If chatInput is empty return from here 
+
+    // create user div 
+    var html = `<div class="chat-content">
                     <div class="chat-details">
-                        <img src="static/images/user.jpg" alt="user-img">
-                        <p>${userText}</p>
+                        <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
                     </div>
-                </div>`;
+                </div>`; 
+    const outgoingChatDiv = createChatElement(html, "outgoing"); 
+
+    // display user inputs for Llama2 and CLIP 
+    var model = changeButton.getAttribute("data-info"); 
+    if (model === "clip") {
+        var userImage = document.getElementById('fileInput').files[0]; 
+        if (userImage) {
+            console.log('Image file:', userImage);
+
+            // display the image 
+            var imgElement = document.createElement('img');
+            imgElement.src = URL.createObjectURL(userImage);
+            imgElement.id = "chat-image"; 
+            outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement);
+        } else {
+            var pElement = document.createElement("p"); 
+            pElement.textContent = userText; 
+            outgoingChatDiv.querySelector(".chat-details").appendChild(pElement);
+        }
+    } else {
+        var pElement = document.createElement("p"); 
+        pElement.textContent = userText; 
+        outgoingChatDiv.querySelector(".chat-details").appendChild(pElement);
+    }
 
     // Create an outgoing chat div with user's message and append it to chat container
-    const outgoingChatDiv = createChatElement(html, "outgoing");
+    // const outgoingChatDiv = createChatElement(html, "outgoing");
     chatContainer.querySelector(".default-text")?.remove();
     chatContainer.appendChild(outgoingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
@@ -164,14 +287,17 @@ const handleOutgoingChat = () => {
 
 deleteButton.addEventListener("click", () => {
     // Remove the chats from local storage and call loadDataFromLocalstorage function
-    // if(confirm("Are you sure you want to delete all the chats?")) {
-    //     localStorage.removeItem("all-chats");
-    //     loadDataFromLocalstorage();
-    // }
-    $.post('delete_chats', function(data) {
+    var model = changeButton.getAttribute("data-info"); 
+    console.log(model); 
+    
+    $.post('delete_chats', 
+      {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        model_name: model
+      }, 
+      function(data) {
         console.log("Successfully delete!"); 
         location.reload(); 
-        // Optionally, you can perform additional actions after clearing the history
     });
 });
 

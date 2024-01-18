@@ -46,9 +46,7 @@ def llamaHomepage(request):
     data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
     data = list(data.values())
     print(len(data))
-    for item in data: 
-        print("item")
-    return render(request, 'index.html', {'data': data})
+    return render(request, 'index.html', {'data': data}) 
 
 def clipHomepage(request): 
     username = request.session["username"]
@@ -57,8 +55,8 @@ def clipHomepage(request):
     data = list(data.values())
     print(len(data))
     for item in data: 
-        print("item")
-    return render(request, 'clip.html')
+        print(item["image_response"])
+    return render(request, 'clip.html', {'data': data}) 
 
 @csrf_exempt
 def fetchImage(request):
@@ -67,12 +65,7 @@ def fetchImage(request):
         if query.is_valid():
             result = HttpResponse(waitForResult(func=fetchResponseFromCLIP, request=request, query=query), content_type='application/json') 
             print(result)
-            return result
-            # return redirect('clipHomepage')  # redirect to a success page
-    # else:
-    #     form = ImageForm()
-    
-    # return render(request, 'upload_image.html', {'form': form})
+            return result 
 
 @csrf_exempt
 def updateTheme(request):
@@ -97,7 +90,12 @@ def getTheme(request):
 def deleteChats(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
-    UserQueries.objects.filter(user_id=user).delete()
+
+    model_name = request.POST.get("model_name")
+    if (model_name == "llama"): 
+        UserQueries.objects.filter(user_id=user).delete()
+    else: 
+        ImageQueries.objects.filter(user_id=user).delete()
     return JsonResponse({'message': 'History cleared successfully'})
 
 # def getTheme(request):
@@ -207,9 +205,11 @@ def fetchResponseFromCLIP(request, query):
                                 timestamp=timezone.now())
     queries.save()              # saves the query and response into database.
 
+    question_text = queries.question_text if queries.question_text else None 
+    image = queries.image.url if queries.image else None 
     query_resp = {
-        'question_text':queries.question_text,
-        'image':queries.image.url, 
+        'question_text':question_text,
+        'image':image, 
         'image_response':queries.image_response.url
     }
     print(query_resp)
