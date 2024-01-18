@@ -80,7 +80,6 @@ const createChatElement = (content, className) => {
 const fetchResponse = async (incomingChatDiv) => {
     // handleOutgoingChat(); 
     var model = changeButton.getAttribute("data-info"); 
-    const pElement = document.createElement("p"); 
     try{
         // const loadDiv = document.getElementById('loadingDiv');
         // loadDiv.style.display = 'block';
@@ -89,27 +88,33 @@ const fetchResponse = async (incomingChatDiv) => {
         
         // fetch response from Llama2/CLIP 
         var response; 
+        var element; 
         if (model === "llama") {
             response = await fetch('fetch_response', {
                 method:'POST',
                 body: formData,
             });
+
+            console.log(response)
+            // create response element 
+            element = document.createElement("p"); 
+            const chat_data = await response.json();
+            element.textContent = chat_data.query_response; 
         } else {
             response = await fetch('fetch_image', {
                 method:'POST',
                 body: formData,
             });
+
+            console.log(response)
+            // create response element 
+            element = document.createElement("img"); 
+            const chat_data = await response.json();
+            element.src = chat_data.image_response; 
         }
-        // const response = await fetch('fetch_image', {
-        //     method:'POST',
-        //     body: formData,
-        // });
-        console.log(response)
-        const chat_data = await response.json();
-        pElement.textContent = chat_data.query_response; 
-        // handleOutgoingChat(); 
+
+        // reset form 
         form.reset();
-        // location.reload(); 
     }catch(error){
         console.error('There was a error with fetching the response : ', error);
         pElement.classList.add("error");
@@ -119,7 +124,7 @@ const fetchResponse = async (incomingChatDiv) => {
 
     // Remove the typing animation, append the paragraph element and save the chats to local storage
     incomingChatDiv.querySelector(".typing-animation").remove();
-    incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
+    incomingChatDiv.querySelector(".chat-details").appendChild(element);
     // localStorage.setItem("all-chats", chatContainer.innerHTML);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 }
