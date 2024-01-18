@@ -17,16 +17,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Retrieve the data_list from the Django template context
-    var chat = JSON.parse(document.getElementById('data').textContent);
-    // console.log(data[0]); 
-    // data = JSON.parse(data);
-    // console.log(data[1]); 
-    // console.log(chat[0]); 
+    var chat = JSON.parse(document.getElementById('data').textContent); 
 
     // Get the <ul> element by its id
     // var dataListElement = document.getElementById("dataList");
 
-    // Populate the <ul> with list items using JavaScript 
+    // load chat history 
+    var model = changeButton.getAttribute("data-info"); 
+    if (model === "llama") {
+        console.log("Loading Llama")
+        loadLlamaChatHistory(chat); 
+    } else {
+        console.log("Loading CLIP"); 
+        loadCLIPChatHistory(chat); 
+    }
+});
+
+function loadLlamaChatHistory(chat) {
+    // populate chat history 
     if (chat != null && chat.length > 0) {
         chat.forEach(function(item) {
             console.log("running"); 
@@ -39,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>`;
     
-            // Create an outgoing chat div with user's message and append it to chat container
+            // create an outgoing chat div with user's message and append it to chat container
             const outgoingChatDiv = createChatElement(prompt_html, "outgoing");
             chatContainer.querySelector(".default-text")?.remove();
             chatContainer.appendChild(outgoingChatDiv);
@@ -53,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
                         </div>`;
-            // Create an incoming chat div with typing animation and append it to chat container
+            // create an incoming chat div with typing animation and append it to chat container
             const incomingChatDiv = createChatElement(response_html, "incoming");
             chatContainer.appendChild(incomingChatDiv);
             chatContainer.scrollTo(0, chatContainer.scrollHeight);
@@ -67,7 +75,73 @@ document.addEventListener('DOMContentLoaded', function() {
         chatContainer.innerHTML = defaultText; 
         chatContainer.scrollTo(0, chatContainer.scrollHeight); 
     }
-});
+}
+
+function loadCLIPChatHistory(chat) {
+    // populate chat history  
+    if (chat != null && chat.length > 0) {
+        chat.forEach(function(item) {
+            console.log("running"); 
+    
+            // fetch prompt 
+            var prompt_html = `<div class="chat-content">
+                            <div class="chat-details">
+                                <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+                            </div>
+                        </div>`; 
+    
+            // create an outgoing chat div with user's message and append it to chat container
+            const outgoingChatDiv = createChatElement(prompt_html, "outgoing"); 
+
+            // add user input 
+            if (item.image) {
+                console.log('Image:', item.image); 
+    
+                // display the image 
+                var imgElement = document.createElement('img');
+                imgElement.src = "media/" + item.image;
+                imgElement.id = "chat-image"; 
+                outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
+            } else {
+                var pElement = document.createElement("p"); 
+                pElement.textContent = item.question_text; 
+                outgoingChatDiv.querySelector(".chat-details").appendChild(pElement); 
+            }
+            chatContainer.querySelector(".default-text")?.remove();
+            chatContainer.appendChild(outgoingChatDiv);
+            chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+    
+            // fetch response 
+            const response_html = `<div class="chat-content">
+                            <div class="chat-details">
+                                <img src="static/images/chatbot.jpg" id="chat-profile" alt="chatbot-img"></img>
+                            </div>
+                            <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
+                        </div>`; 
+
+            // create an incoming chat div with typing animation and append it to chat container
+            const incomingChatDiv = createChatElement(response_html, "incoming"); 
+
+            // add response 
+            console.log('Image response:', item.image_response); 
+            var imgElement = document.createElement('img');
+            imgElement.src = "media/" + item.image_response; 
+            imgElement.id = "chat-image"; 
+            incomingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
+
+            chatContainer.appendChild(incomingChatDiv); 
+            chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+        }); 
+        chat = null; 
+    } else {
+        const defaultText = `<div class="default-text">
+            <h1>CLIP</h1>
+            <p>Start a conversation or upload an image to explore the power of CLIP.</p>
+        </div>`
+        chatContainer.innerHTML = defaultText; 
+        chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+    }
+}
 
 const createChatElement = (content, className) => {
     // Create new div and apply chat, specified class and set html content of div
