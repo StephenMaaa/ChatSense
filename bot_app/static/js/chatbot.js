@@ -111,6 +111,7 @@ const fetchResponse = async (incomingChatDiv) => {
             element = document.createElement("img"); 
             const chat_data = await response.json();
             element.src = chat_data.image_response; 
+            element.id = "chat-image"; 
         }
 
         // reset form 
@@ -143,7 +144,7 @@ const showTypingAnimation = () => {
     // <img src="{% static 'images/chatbot.jpg' %}" alt="chatbot-img"></img>
     const html = `<div class="chat-content">
                     <div class="chat-details">
-                        <img src="static/images/chatbot.jpg" alt="chatbot-img"></img>
+                        <img src="static/images/chatbot.jpg" id="chat-profile" alt="chatbot-img"></img>
                         <div class="typing-animation">
                             <div class="typing-dot" style="--delay: 0.2s"></div>
                             <div class="typing-dot" style="--delay: 0.3s"></div>
@@ -166,7 +167,7 @@ const handleOutgoingChat = () => {
     // create user div 
     var html = `<div class="chat-content">
                     <div class="chat-details">
-                        <img src="static/images/user.jpg" alt="user-img">
+                        <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
                     </div>
                 </div>`; 
     const outgoingChatDiv = createChatElement(html, "outgoing"); 
@@ -181,6 +182,7 @@ const handleOutgoingChat = () => {
             // display the image 
             var imgElement = document.createElement('img');
             imgElement.src = URL.createObjectURL(userImage);
+            imgElement.id = "chat-image"; 
             outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement);
         } else {
             var pElement = document.createElement("p"); 

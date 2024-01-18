@@ -101,7 +101,7 @@ span.material-symbols-rounded {
   display: flex;
   align-items: center;
 }
-.chat .chat-details img {
+.chat .chat-details #chat-profile {
   width: 35px;
   height: 35px;
   align-self: flex-start;
@@ -114,6 +114,13 @@ span.material-symbols-rounded {
   padding: 0 50px 0 25px;
   color: var(--text-color);
   word-break: break-word;
+}
+.chat-details #chat-image {
+  padding: 0 20px;
+  height: 40%; 
+  width: 40%;
+  max-width: 900px;
+  max-height: 900px;
 }
 .chat .chat-details p.error {
   color: #e55865;
@@ -246,7 +253,7 @@ input#query-box.chat-input {
   .chat-container .chat {
     padding: 20px 10px;
   }
-  .chat-container .chat img {
+  .chat-container .chat #chat-profile {
     height: 32px;
     width: 32px;
   }
