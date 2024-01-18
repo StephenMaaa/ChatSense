@@ -44,7 +44,7 @@ def build_index(file_dir, save_dir="vector.index"):
     # store the index locally
     faiss.write_index(index, save_dir) 
 
-def text_search(model, preprocess, index_dir, model_input, input_type, top_k): 
+def search(model, preprocess, file_dir, index_dir, model_input, input_type, top_k): 
     index  = faiss.read_index(index_dir) 
 
     if input_type == "image": 
@@ -64,4 +64,11 @@ def text_search(model, preprocess, index_dir, model_input, input_type, top_k):
     # search the top k images 
     probs, indices = index.search(embeddings, top_k) 
 
-    return probs, indices 
+    # load images 
+    with open(file_dir, 'rb') as f:
+        data = pickle.load(f) 
+    image_paths = data["image_paths"] 
+    
+    # return image_paths[indices[0, 0]]
+    print(indices[0, 0])
+    return image_paths[indices[0, 0]]
