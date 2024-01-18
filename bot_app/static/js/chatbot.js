@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // fetch prompt 
             const prompt_html = `<div class="chat-content">
                             <div class="chat-details">
-                                <img src="static/images/user.jpg" alt="user-img">
+                                <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
                                 <p>${item.question_text}</p>
                             </div>
                         </div>`;
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // fetch response 
             const response_html = `<div class="chat-content">
                             <div class="chat-details">
-                                <img src="static/images/chatbot.jpg" alt="chatbot-img"></img>
+                                <img src="static/images/chatbot.jpg" id="chat-profile" alt="chatbot-img"></img>
                                 <p>${item.query_response}</p>
                             </div>
                             <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
@@ -131,11 +131,19 @@ const fetchResponse = async (incomingChatDiv) => {
 }
 
 const copyResponse = (copyBtn) => {
-    // Copy the text content of the response to the clipboard
-    const reponseTextElement = copyBtn.parentElement.querySelector("p");
-    navigator.clipboard.writeText(reponseTextElement.textContent);
+    // Copy the text content of the response to the clipboard 
+    var model = changeButton.getAttribute("data-info"); 
+    var responseElement; 
+
+    if (model === "llama") {
+        responseElement = copyBtn.parentElement.querySelector("p"); 
+        navigator.clipboard.writeText(responseElement.textContent); 
+    } else {
+        responseElement = copyBtn.parentElement.querySelector("img:nth-child(2)"); 
+        navigator.clipboard.writeText(responseElement.src);
+    }
     copyBtn.textContent = "done";
-    setTimeout(() => copyBtn.textContent = "content_copy", 1000);
+    setTimeout(() => copyBtn.textContent = "content_copy", 1000); 
 }
 
 const showTypingAnimation = () => {
