@@ -6,12 +6,13 @@
 ## Features
 
 - Chat completions powered by Llama 2 
+- Text-image/image-image search chat powered by CLIP (with FAISS) 
 - ChatGPT-style GUI 
-- Store user's chat history in local storage 
+- Store and load user's chat history in local storage 
  
 ## To-Do
 
-- [ ] Integrate CLIP model into the app (front-end, backend) 
+- [X] Integrate CLIP model into the app (front-end, backend) 
 - [ ] Scrolling sidebar
 - [ ] Multiple chats 
 - [ ] PENDING 
