@@ -97,7 +97,12 @@ def getTheme(request):
 def deleteChats(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
-    UserQueries.objects.filter(user_id=user).delete()
+
+    model_name = request.POST.get("model_name")
+    if (model_name == "llama"): 
+        UserQueries.objects.filter(user_id=user).delete()
+    else: 
+        ImageQueries.objects.filter(user_id=user).delete()
     return JsonResponse({'message': 'History cleared successfully'})
 
 # def getTheme(request):

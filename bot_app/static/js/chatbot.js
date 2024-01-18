@@ -85,10 +85,11 @@ const fetchResponse = async (incomingChatDiv) => {
         // loadDiv.style.display = 'block';
         const form = document.getElementById('form-query');
         const formData = new FormData(form);
-        const response = await fetch('fetch_response', {
+        const response = await fetch('fetch_image', {
             method:'POST',
             body: formData,
         });
+        console.log(response)
         const chat_data = await response.json();
         pElement.textContent = chat_data.query_response; 
         // handleOutgoingChat(); 
@@ -104,7 +105,7 @@ const fetchResponse = async (incomingChatDiv) => {
     // Remove the typing animation, append the paragraph element and save the chats to local storage
     incomingChatDiv.querySelector(".typing-animation").remove();
     incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
-    localStorage.setItem("all-chats", chatContainer.innerHTML);
+    // localStorage.setItem("all-chats", chatContainer.innerHTML);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 }
 
@@ -142,20 +143,42 @@ const handleOutgoingChat = () => {
     userText = document.getElementById('query-box').value; 
     // userText = chatInput.value.trim(); // Get chatInput value and remove extra spaces
     console.log(userText); 
-    if(!userText) return; // If chatInput is empty return from here
-    // Clear the input field and reset its height
-    // document.getElementById('query-box').value = "";
-    // chatInput.style.height = `${initialInputHeight}px`;
-    //                         <img src="{% static 'images/user.jpg' %}" alt="user-img">
-    const html = `<div class="chat-content">
+    if(!userText) return; // If chatInput is empty return from here 
+
+    // create user div 
+    var model = changeButton.getAttribute("data-info"); 
+    console.log(model); 
+
+    var html = `<div class="chat-content">
                     <div class="chat-details">
                         <img src="static/images/user.jpg" alt="user-img">
-                        <p>${userText}</p>
                     </div>
-                </div>`;
+                </div>`; 
+    const outgoingChatDiv = createChatElement(html, "outgoing"); 
+
+    // display user inputs for Llama2 and CLIP 
+    if (model === "clip") {
+        var userImage = document.getElementById('fileInput'); 
+        if (userImage) {
+            console.log('Image file:', userImage);
+
+            // display the image 
+            var imgElement = document.createElement('img');
+            imgElement.src = URL.createObjectURL(userImage);
+            outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement);
+        } else {
+            var pElement = document.createElement("p"); 
+            pElement.textContent = userText; 
+            outgoingChatDiv.querySelector(".chat-details").appendChild(pElement);
+        }
+    } else {
+        var pElement = document.createElement("p"); 
+        pElement.textContent = userText; 
+        outgoingChatDiv.querySelector(".chat-details").appendChild(pElement);
+    }
 
     // Create an outgoing chat div with user's message and append it to chat container
-    const outgoingChatDiv = createChatElement(html, "outgoing");
+    // const outgoingChatDiv = createChatElement(html, "outgoing");
     chatContainer.querySelector(".default-text")?.remove();
     chatContainer.appendChild(outgoingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
@@ -164,14 +187,17 @@ const handleOutgoingChat = () => {
 
 deleteButton.addEventListener("click", () => {
     // Remove the chats from local storage and call loadDataFromLocalstorage function
-    // if(confirm("Are you sure you want to delete all the chats?")) {
-    //     localStorage.removeItem("all-chats");
-    //     loadDataFromLocalstorage();
-    // }
-    $.post('delete_chats', function(data) {
+    var model = changeButton.getAttribute("data-info"); 
+    console.log(model); 
+    
+    $.post('delete_chats', 
+      {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        model_name: model
+      }, 
+      function(data) {
         console.log("Successfully delete!"); 
         location.reload(); 
-        // Optionally, you can perform additional actions after clearing the history
     });
 });
 
