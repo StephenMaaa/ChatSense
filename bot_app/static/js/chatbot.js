@@ -79,16 +79,31 @@ const createChatElement = (content, className) => {
 
 const fetchResponse = async (incomingChatDiv) => {
     // handleOutgoingChat(); 
-    const pElement = document.createElement("p");
+    var model = changeButton.getAttribute("data-info"); 
+    const pElement = document.createElement("p"); 
     try{
         // const loadDiv = document.getElementById('loadingDiv');
         // loadDiv.style.display = 'block';
         const form = document.getElementById('form-query');
         const formData = new FormData(form);
-        const response = await fetch('fetch_image', {
-            method:'POST',
-            body: formData,
-        });
+        
+        // fetch response from Llama2/CLIP 
+        var response; 
+        if (model === "llama") {
+            response = await fetch('fetch_response', {
+                method:'POST',
+                body: formData,
+            });
+        } else {
+            response = await fetch('fetch_image', {
+                method:'POST',
+                body: formData,
+            });
+        }
+        // const response = await fetch('fetch_image', {
+        //     method:'POST',
+        //     body: formData,
+        // });
         console.log(response)
         const chat_data = await response.json();
         pElement.textContent = chat_data.query_response; 
@@ -141,14 +156,9 @@ const showTypingAnimation = () => {
 
 const handleOutgoingChat = () => {
     userText = document.getElementById('query-box').value; 
-    // userText = chatInput.value.trim(); // Get chatInput value and remove extra spaces
-    console.log(userText); 
-    if(!userText) return; // If chatInput is empty return from here 
+    // if(!userText) return; // If chatInput is empty return from here 
 
     // create user div 
-    var model = changeButton.getAttribute("data-info"); 
-    console.log(model); 
-
     var html = `<div class="chat-content">
                     <div class="chat-details">
                         <img src="static/images/user.jpg" alt="user-img">
@@ -157,8 +167,9 @@ const handleOutgoingChat = () => {
     const outgoingChatDiv = createChatElement(html, "outgoing"); 
 
     // display user inputs for Llama2 and CLIP 
+    var model = changeButton.getAttribute("data-info"); 
     if (model === "clip") {
-        var userImage = document.getElementById('fileInput'); 
+        var userImage = document.getElementById('fileInput').files[0]; 
         if (userImage) {
             console.log('Image file:', userImage);
 
