@@ -212,9 +212,11 @@ def fetchResponseFromCLIP(request, query):
                                 timestamp=timezone.now())
     queries.save()              # saves the query and response into database.
 
+    question_text = queries.question_text if queries.question_text else None 
+    image = queries.image.url if queries.image else None 
     query_resp = {
-        'question_text':queries.question_text,
-        'image':queries.image.url, 
+        'question_text':question_text,
+        'image':image, 
         'image_response':queries.image_response.url
     }
     print(query_resp)
