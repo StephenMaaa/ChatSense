@@ -15,6 +15,7 @@
 - [X] Integrate CLIP model into the app (front-end, backend) 
 - [ ] Scrolling sidebar
 - [ ] Multiple chats 
+- [ ] Integrate CodeLlama (front-end, backend) 
 - [ ] PENDING 
 
 ## Setup

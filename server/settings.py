@@ -137,6 +137,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Define the base URL to serve media files.
 MEDIA_URL = '/media/'
 
+SESSION_KEY = 'abcd1234'
+
 # if __name__ == "__main__":
 #     print(BASE_DIR)
 #     print(STATICFILES_DIRS) 
