@@ -23,7 +23,7 @@ session = SessionStore(session_key=settings.SESSION_KEY)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # added to load gguf models
-llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama")
+llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama", gpu_layers=200)
 
 
 # Displays the previous queries asked by the user.
@@ -77,6 +77,7 @@ def fetchResponseFromModel(request, query):
     prompt = "Q: " + query_text + "? A:"
     output = llm(prompt) # fetches the response from the model
     response = output
+    print(response)
     user: User = User.objects.get(name=request.session["username"]) 
     queries = UserQueries(question_text=query_text, query_response=response, user_id=user,
                                 timestamp=timezone.now())
