@@ -1,14 +1,14 @@
 from django.urls import path
-from . import views
+from .views import main_views, llama_views, cilp_views
 
 urlpatterns = [
-    path('', views.signin, name='signin'),
-    path('signup', views.signup, name='signup'),
-    path('llama', views.llamaHomepage, name='llama'),
-    path('clip', views.clipHomepage, name='clip'),
-    path('fetch_response', views.fetchResponse, name='fetch_response'), 
-    path('fetch_image', views.fetchImage, name='fetch_image'), 
-    path('update_theme', views.updateTheme, name='update_theme'),
-    path('get_theme', views.getTheme, name='get_theme'),
-    path('delete_chats', views.deleteChats, name='delete_chats'),
+    path('', main_views.signin, name='signin'),
+    path('signup', main_views.signup, name='signup'),
+    path('llama', llama_views.llamaHomepage, name='llama'),
+    path('clip', cilp_views.clipHomepage, name='clip'),
+    path('fetch_response', llama_views.fetchResponse, name='fetch_response'), 
+    path('fetch_image', cilp_views.fetchImage, name='fetch_image'), 
+    path('update_theme', main_views.updateTheme, name='update_theme'),
+    path('get_theme', main_views.getTheme, name='get_theme'),
+    path('delete_chats', main_views.deleteChats, name='delete_chats'),
 ]
