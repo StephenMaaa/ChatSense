@@ -66,9 +66,9 @@ def deleteChats(request):
     return JsonResponse({'message': 'History cleared successfully'})
 
 
-# Verifies and logs into the view.
+# signin 
 def signin(request):
-    if request.method == "POST":
+    if request.method == "POST": 
         sign_in_details = SignInForm(request.POST)
         if sign_in_details.is_valid():
             username = sign_in_details.cleaned_data["username"]
@@ -84,7 +84,7 @@ def signin(request):
                 messages.warning(request, 'User ID not found. Please register...')
     return render(request, 'login.html')
 
-# Whenever user logs in creates a new session
+# login auto-creates a new session 
 def createsession(request, user, username):
     session["username"] = username
     session.create()
@@ -94,7 +94,7 @@ def createsession(request, user, username):
     session_details.save()
 
 
-# If new user, sign up and create a new session whenever register is clicked.
+# signup 
 def signup(request):
     if request.method == "POST":
         signup_details = SignUpForm(request.POST)
@@ -106,4 +106,4 @@ def signup(request):
             createsession(request=request, user=user, username=username)
             return redirect(llamaHomepage)
 
-    return render(request, 'signup.html')
+    return render(request, 'signup.html') 

@@ -1,4 +1,5 @@
 const chatInput = document.querySelector(".chat-input");
+const logoutButton = document.querySelector("#logout-btn");
 const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
@@ -6,6 +7,7 @@ const deleteButton = document.querySelector("#delete-btn");
 const model = document.querySelector(".dropdown-header");
 let userText = null;
 
+// dropdown features in header 
 const modelDropdown = document.getElementById('modelDropdown');
 const header = document.getElementById('header');
 
@@ -42,6 +44,12 @@ function selectModel(model) {
     window.location.href = model;
 }
 
+// logout 
+logoutButton.addEventListener("click", () => {
+    // redirect to the login page 
+    window.location.href = "/"; 
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
     var theme; 
@@ -59,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // var dataListElement = document.getElementById("dataList");
 
     // load chat history 
-    console.log(model); 
+    console.log(model.textContent); 
     if (model.textContent === "Llama 2") {
         console.log("Loading Llama 2");
         loadLlamaChatHistory(chat); 
