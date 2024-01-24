@@ -4,7 +4,7 @@
     {% load static %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta charset="utf-8">
-    <title>ChatGPT Clone in JavaScript | CodingNepal</title>
+    <title>ChatSense</title>
     <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Google Fonts Link For Icons -->
@@ -13,6 +13,17 @@
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
   <body>
+    <header onmouseleave="hideDropdown()" id="header">
+      <div class="model-dropdown" id="modelDropdown" onmouseenter="showDropdown()">
+        <div class="dropdown-header" onclick="toggleDropdown()">Llama 2</div>
+        <div class="dropdown-list" onmouseleave="hideDropdown()">
+          <div class="dropdown-item" onclick="selectModel('codellama')">Code Llama</div>
+          <div class="dropdown-item" onclick="selectModel('clip')">CLIP</div>
+          <!-- <div class="dropdown-item" onclick="selectModel('GPT-5')">GPT 5</div> -->
+        </div>
+      </div>
+    </header>
+
     <!-- Chats container -->
     <div class="chat-container"></div>
     
@@ -29,7 +40,7 @@
         <div class="typing-controls">
           <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
           <span id="delete-btn" class="material-symbols-rounded">delete</span>
-          <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span>
+          <!-- <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span> -->
       </div>
     </div>
   </body>

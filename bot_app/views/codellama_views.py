@@ -10,7 +10,7 @@ from django.conf import settings
 from ..forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries
+from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -23,30 +23,30 @@ session = SessionStore(session_key=settings.SESSION_KEY)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # added to load gguf models
-llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama", gpu_layers=200)
+codellama = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="codellama-34b.Q5_K_M.gguf", model_type="llama")
 
 
 # Displays the previous queries asked by the user.
-def llamaHomepage(request):
+def codellamaHomepage(request):
     # print(os.getcwd())
     username = request.session["username"]
     user = User.objects.get(name=username)
-    data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
+    data = CodeQueries.objects.filter(user_id=user).values('question_text', 'query_response')
     data = list(data.values())
     print(len(data))
-    return render(request, 'index.html', {'data': data}) 
+    return render(request, 'codellama.html', {'data': data}) 
 
 
 # Whenever user clicks requests for a response, the server will send a prompt to the LLM model. And return the response to the html page.
 @csrf_exempt
-def fetchResponse(request):
+def fetchCode(request):
     print(request.method)
     print(request)
     if request.method == "POST":
         query = QueryForm(request.POST)
         print(query)
         if query.is_valid():
-            result = HttpResponse(waitForResult(func=fetchResponseFromModel, request=request, query=query), content_type='application/json') 
+            result = HttpResponse(waitForResult(func=fetchResponseFromCodeLlama, request=request, query=query), content_type='application/json') 
             print(result)
             # return HttpResponse(waitForResult(request=request, query=query), content_type='application/json')  
             return result      
@@ -71,15 +71,14 @@ def waitForResult(func, request, query):
 
 
 # fetches the query response from llama 2 model and saves the respective user's queries in the database.
-def fetchResponseFromModel(request, query):
+def fetchResponseFromCodeLlama(request, query):
     query_text = query.cleaned_data["query"]
     print(query_text)
     prompt = "Q: " + query_text + "? A:"
-    output = llm(prompt) # fetches the response from the model
+    output = codellama(prompt) # fetches the response from the model
     response = output
-    print(response)
     user: User = User.objects.get(name=request.session["username"]) 
-    queries = UserQueries(question_text=query_text, query_response=response, user_id=user,
+    queries = CodeQueries(question_text=query_text, query_response=response, user_id=user,
                                 timestamp=timezone.now())
     queries.save()              # saves the query and response into database.
     query_resp = {

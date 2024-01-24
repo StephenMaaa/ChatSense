@@ -29,6 +29,71 @@
 body {
   background: var(--outgoing-chat-bg);
 }
+
+/* header styles */
+header {
+  /* background-color: #4a4a4a; */
+  color: #ffffff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 20px; /* Move brand to the right corner */
+}
+
+.model-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  margin-left: 20px; /* Move dropdown select to the left corner */
+}
+
+.dropdown-header {
+  padding: 12px;
+  /* background-color: #333333; */
+  border-radius: 4px;
+  font-size: 16px;
+  width: 150px; /* Fixed width */
+  text-align: center; /* Center the text */
+  transition: background-color 0.3s ease; /* Add transition effect */
+}
+
+.dropdown-header:hover,
+.model-dropdown.clicked .dropdown-list {
+  background-color: rgba(0, 0, 0, 0.2); /* Change background color on hover or when dropdown is open */
+}
+
+.dropdown-list {
+  margin-top: 10px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none;
+  /* background-color: #333333; */
+  border-radius: 4px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  z-index: 1;
+}
+
+.dropdown-item {
+  padding: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 150px; /* Fixed width */
+  text-align: center; /* Center the text */
+  background-color: rgba(0, 0, 0, 0.2); /* Set the background color */
+}
+
+.model-dropdown.clicked .dropdown-list {
+  display: block;
+}
+
 /* Chats container styling */
 .chat-container {
   overflow-y: auto;
