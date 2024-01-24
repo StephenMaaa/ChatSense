@@ -146,10 +146,13 @@ function loadCLIPChatHistory(chat) {
                 console.log('Image:', item.image); 
     
                 // display the image 
-                var imgElement = document.createElement('img');
-                imgElement.src = "media/" + item.image;
-                imgElement.id = "chat-image"; 
-                outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
+                var imgSrcElement = document.createElement('img');
+                imgSrcElement.src = "media/" + item.image;
+                imgSrcElement.id = "chat-image"; 
+                imgSrcElement.onclick = function() {
+                    openModal(imgSrcElement.src); 
+                };
+                outgoingChatDiv.querySelector(".chat-details").appendChild(imgSrcElement); 
             } else {
                 var pElement = document.createElement("p"); 
                 pElement.textContent = item.question_text; 
@@ -171,10 +174,13 @@ function loadCLIPChatHistory(chat) {
             const incomingChatDiv = createChatElement(response_html, "incoming"); 
 
             // add response 
-            console.log('Image response:', item.image_response); 
+            // console.log('Image response:', item.image_response); 
             var imgElement = document.createElement('img');
             imgElement.src = "media/" + item.image_response; 
             imgElement.id = "chat-image"; 
+            imgElement.onclick = function() {
+                openModal(imgElement.src); 
+            };
             incomingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
 
             chatContainer.appendChild(incomingChatDiv); 
@@ -216,7 +222,7 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            console.log(response)
+            // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
             const chat_data = await response.json();
@@ -227,7 +233,7 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            console.log(response)
+            // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
             const chat_data = await response.json();
@@ -238,12 +244,15 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            console.log(response)
+            // console.log(response) 
             // create response element 
             element = document.createElement("img"); 
             const chat_data = await response.json();
             element.src = chat_data.image_response; 
             element.id = "chat-image"; 
+            element.onclick = function() {
+                openModal(imgElement.src); 
+            };
         }
 
         // reset form 
@@ -316,12 +325,13 @@ const handleOutgoingChat = () => {
     if (model.textContent === "CLIP") {
         var userImage = document.getElementById('fileInput').files[0]; 
         if (userImage) {
-            console.log('Image file:', userImage);
-
             // display the image 
             var imgElement = document.createElement('img');
-            imgElement.src = URL.createObjectURL(userImage);
+            imgElement.src = URL.createObjectURL(userImage); 
             imgElement.id = "chat-image"; 
+            imgElement.onclick = function() {
+                openModal(imgElement.src); 
+            };
             outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement);
         } else {
             var pElement = document.createElement("p"); 
@@ -356,25 +366,12 @@ deleteButton.addEventListener("click", () => {
 });
 
 themeButton.addEventListener("click", () => {
-    // Toggle body's class for the theme mode and save the updated theme to the local storage 
-    document.body.classList.toggle("light-mode");
-    localStorage.setItem("themeColor", themeButton.innerText);
+    // toggle the theme mode and save the updated theme to the local storage 
+    document.body.classList.toggle("light-mode"); 
     updateTheme(themeButton.innerText); 
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
     // updateTheme(themeButton.innerText); 
 });
-
-// changeButton.addEventListener("click", () => {
-//     var model = changeButton.getAttribute("data-info"); 
-//     console.log(model); 
-
-//     // switch models 
-//     if (model === "clip") {
-//         window.location.href = "llama"; 
-//     } else {
-//         window.location.href = "clip"; 
-//     }
-// }); 
 
 function updateTheme(theme) {
     $.post('update_theme', { theme: theme }, function(data) {
@@ -417,4 +414,17 @@ window.onload = function(){
     })
 }
 
-// loadDataFromLocalstorage();
+// zoom in images 
+function openModal(imageSrc) {
+    console.log(imageSrc); 
+    // display the modal
+    document.getElementById('myModal').style.display = 'flex';
+
+    // set the image source in the modal
+    document.getElementById('modalImage').src = imageSrc;
+}
+
+function closeModal() {
+    // hide the modal
+    document.getElementById('myModal').style.display = 'none';
+}

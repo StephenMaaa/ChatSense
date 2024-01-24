@@ -15,6 +15,7 @@
   --incoming-chat-bg: #444654;
   --outgoing-chat-border: #343541;
   --incoming-chat-border: #444654;
+  --model-background-color: rgba(0, 0, 0, 0.2); 
 }
 .light-mode {
   --text-color: #343541;
@@ -24,26 +25,27 @@
   --outgoing-chat-bg: #FFFFFF;
   --incoming-chat-bg: #F7F7F8;
   --outgoing-chat-border: #FFFFFF;
-  --incoming-chat-border: #D9D9E3;
+  --incoming-chat-border: #D9D9E3; 
+  --model-background-color: rgba(231, 231, 230, 0.733); 
 }
+
 body {
-  background: var(--outgoing-chat-bg);
+  overflow: hidden; 
+  height: 100%; 
+  background: var(--outgoing-chat-bg); 
 }
 
 /* header styles */
 header {
   /* background-color: #4a4a4a; */
-  color: #ffffff;
+  /* position: fixed; */
+  top: 0;
+  left: 0; 
+  color: var(--text-color);
   padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.brand {
-  font-size: 24px;
-  font-weight: bold;
-  margin-right: 20px; /* Move brand to the right corner */
 }
 
 .model-dropdown {
@@ -58,15 +60,17 @@ header {
   padding: 12px;
   /* background-color: #333333; */
   border-radius: 4px;
-  font-size: 16px;
-  width: 150px; /* Fixed width */
-  text-align: center; /* Center the text */
-  transition: background-color 0.3s ease; /* Add transition effect */
+  font-size: 1.2rem;
+  width: 150px; /* fixed width */
+  text-align: center; /* center the text */
+  transition: background-color 0.3s ease; /* add transition effect */
+  border-radius: 4px; 
+  font-weight: bold; 
 }
 
-.dropdown-header:hover,
-.model-dropdown.clicked .dropdown-list {
-  background-color: rgba(0, 0, 0, 0.2); /* Change background color on hover or when dropdown is open */
+.dropdown-header:hover, .dropdown-header.clicked {
+  background-color: var(--model-background-color); 
+  /* opacity: 1;  */
 }
 
 .dropdown-list {
@@ -75,20 +79,27 @@ header {
   top: 100%;
   left: 0;
   display: none;
-  /* background-color: #333333; */
-  border-radius: 4px;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  /* background-color: var(--model-background-color); */
+  /* border-radius: 4px; */
+  /* box-shadow: 0 2px 4px var(--model-background-color); */
   z-index: 1;
 }
 
 .dropdown-item {
   padding: 12px;
   cursor: pointer;
-  font-size: 16px;
-  width: 150px; /* Fixed width */
-  text-align: center; /* Center the text */
-  background-color: rgba(0, 0, 0, 0.2); /* Set the background color */
+  font-size: 1.2rem;
+  width: 150px; /* fixed width */
+  text-align: center; /* center the text */
+  background-color: var(--model-background-color); /* set the background color */ 
+  border-radius: 4px; 
+  font-weight: bold; 
+  z-index: 2;
 }
+
+/* .dropdown-item::after {
+  visibility: hidden; 
+} */
 
 .model-dropdown.clicked .dropdown-list {
   display: block;
@@ -186,6 +197,8 @@ span.material-symbols-rounded {
   width: 40%;
   max-width: 900px;
   max-height: 900px;
+  min-width: 200px; 
+  min-height: 200px; 
 }
 .chat .chat-details p.error {
   color: #e55865;
@@ -307,6 +320,33 @@ input#query-box.chat-input {
 .typing-controls span:hover {
   background: var(--icon-hover-bg);
 }
+
+/* image modal styles  */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  cursor: pointer;
+}
+
 /* Reponsive Media Query */
 @media screen and (max-width: 600px) {
   .default-text h1 {
