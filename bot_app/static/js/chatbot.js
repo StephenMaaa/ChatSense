@@ -3,8 +3,44 @@ const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
-const changeButton = document.querySelector("#change-btn");
+const model = document.querySelector(".dropdown-header");
 let userText = null;
+
+const modelDropdown = document.getElementById('modelDropdown');
+const header = document.getElementById('header');
+
+function toggleDropdown() {
+    modelDropdown.classList.toggle('clicked');
+    const dropdownList = document.querySelector('.dropdown-list');
+    dropdownList.style.display = dropdownList.style.display === 'block' ? 'none' : 'block';
+}
+
+function hideDropdown() {
+    modelDropdown.classList.remove('clicked');
+    const dropdownList = document.querySelector('.dropdown-list');
+    dropdownList.style.display = 'none';
+}
+
+function showDropdown() {
+    modelDropdown.classList.add('clicked');
+    const dropdownList = document.querySelector('.dropdown-list');
+    dropdownList.style.display = 'block';
+}
+
+// Add event listener to hide dropdown on mouse move outside the header
+document.addEventListener('mousemove', function(event) {
+    const isOutsideHeader = !header.contains(event.target);
+    if (isOutsideHeader) {
+        hideDropdown();
+    }
+});
+
+function selectModel(model) {
+    // const dropdownHeader = document.querySelector('.dropdown-header');
+    // dropdownHeader.textContent = model;
+    // hideDropdown(); 
+    window.location.href = model;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
@@ -23,13 +59,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // var dataListElement = document.getElementById("dataList");
 
     // load chat history 
-    var model = changeButton.getAttribute("data-info"); 
-    if (model === "llama") {
-        console.log("Loading Llama")
+    console.log(model); 
+    if (model.textContent === "Llama 2") {
+        console.log("Loading Llama 2");
         loadLlamaChatHistory(chat); 
-    } else {
+    } else if (model.textContent === "CLIP") {
         console.log("Loading CLIP"); 
         loadCLIPChatHistory(chat); 
+    } else {
+        console.log("Loading Code Llama");
     }
 });
 
@@ -310,17 +348,17 @@ themeButton.addEventListener("click", () => {
     // updateTheme(themeButton.innerText); 
 });
 
-changeButton.addEventListener("click", () => {
-    var model = changeButton.getAttribute("data-info"); 
-    console.log(model); 
+// changeButton.addEventListener("click", () => {
+//     var model = changeButton.getAttribute("data-info"); 
+//     console.log(model); 
 
-    // switch models 
-    if (model === "clip") {
-        window.location.href = "llama"; 
-    } else {
-        window.location.href = "clip"; 
-    }
-}); 
+//     // switch models 
+//     if (model === "clip") {
+//         window.location.href = "llama"; 
+//     } else {
+//         window.location.href = "clip"; 
+//     }
+// }); 
 
 function updateTheme(theme) {
     $.post('update_theme', { theme: theme }, function(data) {
