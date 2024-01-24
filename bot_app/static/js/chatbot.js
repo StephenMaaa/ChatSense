@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// load Llama 2/Code Llama chat history 
 function loadLlamaChatHistory(chat) {
     // populate chat history 
     if (chat != null && chat.length > 0) {
@@ -107,10 +108,18 @@ function loadLlamaChatHistory(chat) {
         }); 
         chat = null; 
     } else {
-        const defaultText = `<div class="default-text">
-            <h1>Llama 2</h1>
-            <p>Start a conversation and explore the power of gen-AI.</p>
-        </div>`
+        var defaultText; 
+        if (model.textContent === "Llama 2") {
+            defaultText = `<div class="default-text">
+                            <h1>Llama 2</h1>
+                            <p>Start a conversation and explore chat completions.</p>
+                        </div>`
+        } else {
+            defaultText = `<div class="default-text">
+                            <h1>Code Llama</h1>
+                            <p>Start a conversation and explore code completions.</p>
+                        </div>`
+        }
         chatContainer.innerHTML = defaultText; 
         chatContainer.scrollTo(0, chatContainer.scrollHeight); 
     }
@@ -334,14 +343,11 @@ const handleOutgoingChat = () => {
 }
 
 deleteButton.addEventListener("click", () => {
-    // Remove the chats from local storage and call loadDataFromLocalstorage function
-    var model = changeButton.getAttribute("data-info"); 
-    console.log(model); 
-    
+    // remove the chats from local storage 
     $.post('delete_chats', 
       {
         csrfmiddlewaretoken: "{{ csrf_token }}",
-        model_name: model
+        model_name: model.textContent
       }, 
       function(data) {
         console.log("Successfully delete!"); 
