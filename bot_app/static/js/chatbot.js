@@ -66,8 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (model.textContent === "CLIP") {
         console.log("Loading CLIP"); 
         loadCLIPChatHistory(chat); 
-    } else {
+    } else if (model.textContent === "Code Llama") {
         console.log("Loading Code Llama");
+        loadLlamaChatHistory(chat); 
     }
 });
 
@@ -190,8 +191,7 @@ const createChatElement = (content, className) => {
 }
 
 const fetchResponse = async (incomingChatDiv) => {
-    // handleOutgoingChat(); 
-    var model = changeButton.getAttribute("data-info"); 
+    // handleOutgoingChat();  
     try{
         // const loadDiv = document.getElementById('loadingDiv');
         // loadDiv.style.display = 'block';
@@ -201,8 +201,19 @@ const fetchResponse = async (incomingChatDiv) => {
         // fetch response from Llama2/CLIP 
         var response; 
         var element; 
-        if (model === "llama") {
+        if (model.textContent === "Llama 2") {
             response = await fetch('fetch_response', {
+                method:'POST',
+                body: formData,
+            });
+
+            console.log(response)
+            // create response element 
+            element = document.createElement("p"); 
+            const chat_data = await response.json();
+            element.textContent = chat_data.query_response; 
+        } else if (model.textContent === "Code Llama") {
+            response = await fetch('fetch_code', {
                 method:'POST',
                 body: formData,
             });
@@ -292,9 +303,8 @@ const handleOutgoingChat = () => {
                 </div>`; 
     const outgoingChatDiv = createChatElement(html, "outgoing"); 
 
-    // display user inputs for Llama2 and CLIP 
-    var model = changeButton.getAttribute("data-info"); 
-    if (model === "clip") {
+    // display user inputs for Llama2, Code Llama and CLIP 
+    if (model.textContent === "CLIP") {
         var userImage = document.getElementById('fileInput').files[0]; 
         if (userImage) {
             console.log('Image file:', userImage);

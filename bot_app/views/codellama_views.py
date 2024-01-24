@@ -10,7 +10,7 @@ from django.conf import settings
 from ..forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries
+from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -31,7 +31,7 @@ def codellamaHomepage(request):
     # print(os.getcwd())
     username = request.session["username"]
     user = User.objects.get(name=username)
-    data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
+    data = CodeQueries.objects.filter(user_id=user).values('question_text', 'query_response')
     data = list(data.values())
     print(len(data))
     return render(request, 'codellama.html', {'data': data}) 
@@ -78,7 +78,7 @@ def fetchResponseFromCodeLlama(request, query):
     output = codellama(prompt) # fetches the response from the model
     response = output
     user: User = User.objects.get(name=request.session["username"]) 
-    queries = UserQueries(question_text=query_text, query_response=response, user_id=user,
+    queries = CodeQueries(question_text=query_text, query_response=response, user_id=user,
                                 timestamp=timezone.now())
     queries.save()              # saves the query and response into database.
     query_resp = {

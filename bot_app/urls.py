@@ -6,6 +6,7 @@ urlpatterns = [
     path('signup', main_views.signup, name='signup'),
     path('llama', llama_views.llamaHomepage, name='llama'),
     path('clip', cilp_views.clipHomepage, name='clip'),
+    path('codellama', codellama_views.codellamaHomepage, name='codellama'),
     path('fetch_response', llama_views.fetchResponse, name='fetch_response'), 
     path('fetch_image', cilp_views.fetchImage, name='fetch_image'), 
     path('fetch_code', codellama_views.fetchCode, name='fetch_code'), 
