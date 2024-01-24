@@ -10,7 +10,7 @@ from django.conf import settings
 from ..forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries
+from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -57,16 +57,18 @@ def deleteChats(request):
     user = User.objects.get(name=username)
 
     model_name = request.POST.get("model_name")
-    if (model_name == "llama"): 
-        UserQueries.objects.filter(user_id=user).delete()
+    if (model_name == "Llama 2"): 
+        UserQueries.objects.filter(user_id=user).delete() 
+    elif (model_name == "Code Llama"): 
+        CodeQueries.objects.filter(user_id=user).delete() 
     else: 
-        ImageQueries.objects.filter(user_id=user).delete()
+        ImageQueries.objects.filter(user_id=user).delete() 
     return JsonResponse({'message': 'History cleared successfully'})
 
 
-# Verifies and logs into the view.
+# signin 
 def signin(request):
-    if request.method == "POST":
+    if request.method == "POST": 
         sign_in_details = SignInForm(request.POST)
         if sign_in_details.is_valid():
             username = sign_in_details.cleaned_data["username"]
@@ -82,7 +84,7 @@ def signin(request):
                 messages.warning(request, 'User ID not found. Please register...')
     return render(request, 'login.html')
 
-# Whenever user logs in creates a new session
+# login auto-creates a new session 
 def createsession(request, user, username):
     session["username"] = username
     session.create()
@@ -92,7 +94,7 @@ def createsession(request, user, username):
     session_details.save()
 
 
-# If new user, sign up and create a new session whenever register is clicked.
+# signup 
 def signup(request):
     if request.method == "POST":
         signup_details = SignUpForm(request.POST)
@@ -104,4 +106,4 @@ def signup(request):
             createsession(request=request, user=user, username=username)
             return redirect(llamaHomepage)
 
-    return render(request, 'signup.html')
+    return render(request, 'signup.html') 

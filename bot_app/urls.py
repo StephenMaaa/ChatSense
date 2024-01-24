@@ -4,6 +4,7 @@ from .views import main_views, llama_views, cilp_views, codellama_views
 urlpatterns = [
     path('', main_views.signin, name='signin'),
     path('signup', main_views.signup, name='signup'),
+    # path('logout', main_views.logout, name='logout'),
     path('llama', llama_views.llamaHomepage, name='llama'),
     path('clip', cilp_views.clipHomepage, name='clip'),
     path('codellama', codellama_views.codellamaHomepage, name='codellama'),

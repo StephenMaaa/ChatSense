@@ -13,15 +13,15 @@
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
   <body>
-    <header onmouseleave="hideDropdown()" id="header">
+    <header class="appHeader" onmouseleave="hideDropdown()" id="header">
       <div class="model-dropdown" id="modelDropdown" onmouseenter="showDropdown()">
         <div class="dropdown-header" onclick="toggleDropdown()">Llama 2</div>
         <div class="dropdown-list" onmouseleave="hideDropdown()">
           <div class="dropdown-item" onclick="selectModel('codellama')">Code Llama</div>
           <div class="dropdown-item" onclick="selectModel('clip')">CLIP</div>
-          <!-- <div class="dropdown-item" onclick="selectModel('GPT-5')">GPT 5</div> -->
         </div>
       </div>
+      <span id="logout-btn" class="material-symbols-rounded">logout</span>
     </header>
 
     <!-- Chats container -->

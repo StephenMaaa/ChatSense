@@ -1,4 +1,5 @@
 const chatInput = document.querySelector(".chat-input");
+const logoutButton = document.querySelector("#logout-btn");
 const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
@@ -6,6 +7,7 @@ const deleteButton = document.querySelector("#delete-btn");
 const model = document.querySelector(".dropdown-header");
 let userText = null;
 
+// dropdown features in header 
 const modelDropdown = document.getElementById('modelDropdown');
 const header = document.getElementById('header');
 
@@ -42,6 +44,12 @@ function selectModel(model) {
     window.location.href = model;
 }
 
+// logout 
+logoutButton.addEventListener("click", () => {
+    // redirect to the login page 
+    window.location.href = "/"; 
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
     var theme; 
@@ -59,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // var dataListElement = document.getElementById("dataList");
 
     // load chat history 
-    console.log(model); 
+    console.log(model.textContent); 
     if (model.textContent === "Llama 2") {
         console.log("Loading Llama 2");
         loadLlamaChatHistory(chat); 
@@ -72,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// load Llama 2/Code Llama chat history 
 function loadLlamaChatHistory(chat) {
     // populate chat history 
     if (chat != null && chat.length > 0) {
@@ -107,10 +116,18 @@ function loadLlamaChatHistory(chat) {
         }); 
         chat = null; 
     } else {
-        const defaultText = `<div class="default-text">
-            <h1>Llama 2</h1>
-            <p>Start a conversation and explore the power of gen-AI.</p>
-        </div>`
+        var defaultText; 
+        if (model.textContent === "Llama 2") {
+            defaultText = `<div class="default-text">
+                            <h1>Llama 2</h1>
+                            <p>Start a conversation and explore chat completions.</p>
+                        </div>`
+        } else {
+            defaultText = `<div class="default-text">
+                            <h1>Code Llama</h1>
+                            <p>Start a conversation and explore code completions.</p>
+                        </div>`
+        }
         chatContainer.innerHTML = defaultText; 
         chatContainer.scrollTo(0, chatContainer.scrollHeight); 
     }
@@ -137,10 +154,13 @@ function loadCLIPChatHistory(chat) {
                 console.log('Image:', item.image); 
     
                 // display the image 
-                var imgElement = document.createElement('img');
-                imgElement.src = "media/" + item.image;
-                imgElement.id = "chat-image"; 
-                outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
+                var imgSrcElement = document.createElement('img');
+                imgSrcElement.src = "media/" + item.image;
+                imgSrcElement.id = "chat-image"; 
+                imgSrcElement.onclick = function() {
+                    openModal(imgSrcElement.src); 
+                };
+                outgoingChatDiv.querySelector(".chat-details").appendChild(imgSrcElement); 
             } else {
                 var pElement = document.createElement("p"); 
                 pElement.textContent = item.question_text; 
@@ -162,10 +182,13 @@ function loadCLIPChatHistory(chat) {
             const incomingChatDiv = createChatElement(response_html, "incoming"); 
 
             // add response 
-            console.log('Image response:', item.image_response); 
+            // console.log('Image response:', item.image_response); 
             var imgElement = document.createElement('img');
             imgElement.src = "media/" + item.image_response; 
             imgElement.id = "chat-image"; 
+            imgElement.onclick = function() {
+                openModal(imgElement.src); 
+            };
             incomingChatDiv.querySelector(".chat-details").appendChild(imgElement); 
 
             chatContainer.appendChild(incomingChatDiv); 
@@ -207,7 +230,7 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            console.log(response)
+            // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
             const chat_data = await response.json();
@@ -218,7 +241,7 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            console.log(response)
+            // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
             const chat_data = await response.json();
@@ -229,12 +252,15 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            console.log(response)
+            // console.log(response) 
             // create response element 
             element = document.createElement("img"); 
             const chat_data = await response.json();
             element.src = chat_data.image_response; 
             element.id = "chat-image"; 
+            element.onclick = function() {
+                openModal(imgElement.src); 
+            };
         }
 
         // reset form 
@@ -307,12 +333,13 @@ const handleOutgoingChat = () => {
     if (model.textContent === "CLIP") {
         var userImage = document.getElementById('fileInput').files[0]; 
         if (userImage) {
-            console.log('Image file:', userImage);
-
             // display the image 
             var imgElement = document.createElement('img');
-            imgElement.src = URL.createObjectURL(userImage);
+            imgElement.src = URL.createObjectURL(userImage); 
             imgElement.id = "chat-image"; 
+            imgElement.onclick = function() {
+                openModal(imgElement.src); 
+            };
             outgoingChatDiv.querySelector(".chat-details").appendChild(imgElement);
         } else {
             var pElement = document.createElement("p"); 
@@ -334,14 +361,11 @@ const handleOutgoingChat = () => {
 }
 
 deleteButton.addEventListener("click", () => {
-    // Remove the chats from local storage and call loadDataFromLocalstorage function
-    var model = changeButton.getAttribute("data-info"); 
-    console.log(model); 
-    
+    // remove the chats from local storage 
     $.post('delete_chats', 
       {
         csrfmiddlewaretoken: "{{ csrf_token }}",
-        model_name: model
+        model_name: model.textContent
       }, 
       function(data) {
         console.log("Successfully delete!"); 
@@ -350,25 +374,12 @@ deleteButton.addEventListener("click", () => {
 });
 
 themeButton.addEventListener("click", () => {
-    // Toggle body's class for the theme mode and save the updated theme to the local storage 
-    document.body.classList.toggle("light-mode");
-    localStorage.setItem("themeColor", themeButton.innerText);
+    // toggle the theme mode and save the updated theme to the local storage 
+    document.body.classList.toggle("light-mode"); 
     updateTheme(themeButton.innerText); 
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
     // updateTheme(themeButton.innerText); 
 });
-
-// changeButton.addEventListener("click", () => {
-//     var model = changeButton.getAttribute("data-info"); 
-//     console.log(model); 
-
-//     // switch models 
-//     if (model === "clip") {
-//         window.location.href = "llama"; 
-//     } else {
-//         window.location.href = "clip"; 
-//     }
-// }); 
 
 function updateTheme(theme) {
     $.post('update_theme', { theme: theme }, function(data) {
@@ -411,4 +422,17 @@ window.onload = function(){
     })
 }
 
-// loadDataFromLocalstorage();
+// zoom in images 
+function openModal(imageSrc) {
+    console.log(imageSrc); 
+    // display the modal
+    document.getElementById('myModal').style.display = 'flex';
+
+    // set the image source in the modal
+    document.getElementById('modalImage').src = imageSrc;
+}
+
+function closeModal() {
+    // hide the modal
+    document.getElementById('myModal').style.display = 'none';
+}

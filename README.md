@@ -16,9 +16,9 @@
 - [X] Integrate CLIP model into the app (front-end, backend) 
 - [X] Integrate CodeLlama (front-end, backend) 
 - [X] App header with dropdown model select 
+- [X] Logout 
 - [ ] Scrolling sidebar
 - [ ] Multiple chats 
-- [ ] Logout 
 - [ ] PENDING 
 
 ## Setup
