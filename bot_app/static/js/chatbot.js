@@ -50,6 +50,56 @@ logoutButton.addEventListener("click", () => {
     window.location.href = "/"; 
 });
 
+// side bar window 
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const openBtn = document.querySelector('.open-btn');
+    // const content = document.getElementById('mainContent');
+    const elementsToAdjust = document.querySelectorAll('.adjust-width');
+    const elementsToAdjust2 = document.querySelectorAll('.adjust-left');
+    const isOpen = sidebar.style.width === '250px';
+
+    if (isOpen) {
+      sidebar.style.width = '0';
+      openBtn.style.left = '0';
+      // content.style.marginLeft = '0';
+      elementsToAdjust.forEach(element => {
+        element.style.marginLeft = '0';
+      });
+      elementsToAdjust2.forEach(element => {
+        element.style.marginLeft = '-5.5%';
+      });
+    } else {
+      sidebar.style.width = '250px';
+      openBtn.style.left = '250px';
+      // content.style.marginLeft = '250px';
+      elementsToAdjust.forEach(element => {
+        element.style.marginLeft = '250px';
+      });
+      elementsToAdjust2.forEach(element => {
+        element.style.marginLeft = '-15%';
+      });
+    }
+}
+
+function showChat(chatId) {
+    // hide all chat history
+    document.querySelectorAll('.chat-history').forEach((chat) => {
+      chat.style.display = 'none';
+});
+
+// show the selected chat history
+const selectedChat = document.getElementById(`chat${chatId}`);
+    if (selectedChat) {
+      selectedChat.style.display = 'block';
+    }
+}
+
+function loadChatHistory(chatId) {
+    // replace this with your logic to load and display the chat history based on chatId
+    alert(`Load chat history for Chat ${chatId}`);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
     var theme; 

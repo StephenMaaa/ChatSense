@@ -13,7 +13,7 @@
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
   <body>
-    <header class="appHeader" onmouseleave="hideDropdown()" id="header">
+    <header class="appHeader adjust-width" onmouseleave="hideDropdown()" id="header">
       <div class="model-dropdown" id="modelDropdown" onmouseenter="showDropdown()">
         <div class="dropdown-header" onclick="toggleDropdown()">Llama 2</div>
         <div class="dropdown-list" onmouseleave="hideDropdown()">
@@ -24,12 +24,26 @@
       <span id="logout-btn" class="material-symbols-rounded">logout</span>
     </header>
 
+    <!-- Open button with icon to toggle sidebar -->
+    <div class="open-btn" onclick="toggleSidebar()">&#9776;</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="chatgpt-layout chathistory-item">
+        New Chat
+      </div>
+      <div>
+        <div class="chathistory-item" onclick="selectModel('codellama')">Code Llama</div>
+        <div class="chathistory-item" onclick="selectModel('clip')">CLIP</div>
+      </div>
+    </div>
+
     <!-- Chats container -->
-    <div class="chat-container"></div>
+    <div class="chat-container adjust-width"></div>
     
     <!-- Typing container -->
-    <div class="typing-container">
-      <div class="typing-content">
+    <div class="typing-container adjust-width">
+      <div class="typing-content adjust-left">
         <form method="post" id="form-query">
             {% csrf_token %}
             <div class="typing-textarea">

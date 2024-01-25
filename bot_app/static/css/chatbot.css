@@ -103,11 +103,99 @@ header {
   display: block;
 }
 
-/* Chats container styling */
-.chat-container {
-  overflow-y: auto;
-  max-height: 100vh;
-  padding-bottom: 150px;
+/* Side bar window styles */
+.sidebar {
+  /* display: flex; */
+  justify-content: center; /* This centers the inner div horizontally */
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0; /* Move sidebar to the left */
+  background-color: #000;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 10px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.chathistory-item:hover {
+  background-color: #555555;
+}
+
+.open-btn {
+  font-size: 24px;
+  cursor: pointer;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: #ffffff;
+  transition: left 0.5s; /* Add transition for smooth movement */
+}
+
+.open-btn:hover {
+  color: #aaaaaa;
+}
+
+.content {
+  transition: margin-left 0.5s;
+}
+
+/* Chat history style (adjust as needed) */
+.chat-history {
+  padding: 20px;
+  color: #333333;
+  transition: margin-left 0.5s; /* Add transition for smooth movement */
+  cursor: pointer; 
+  border-bottom: 1px solid #455a64;
+}
+
+.chat-history:hover {
+  background-color: #555555;
+  color: #ffffff;
+}
+
+/* Class for elements that need their width adjusted */
+.adjust-width {
+  margin-left: 0;
+  transition: margin-left 0.5s; /* Add transition for smooth movement */
+}
+
+.adjust-left {
+  margin-left: -5.5%;
+  transition: margin-left 0.5s; /* Add transition for smooth movement */
+}
+
+/* ChatGPT-styled layout */
+.chatgpt-layout {
+  position: sticky;
+  top: 0;
+  color: #ffffff;
+  padding: 10px;
+}
+
+.chathistory-item {
+  width: 90%;
+  margin: 0 5%;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  text-align: center; /* center the text */
+  color: #ffffff;
+  background-color: var(--model-background-color); /* set the background color */ 
+  border-radius: 4px; 
+  font-weight: bold; 
+  z-index: 2;
+}
+
+.side-bar-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  margin-left: 20px; /* Move dropdown select to the left corner */
 }
 
 :where(.chat-container, input)::-webkit-scrollbar {
