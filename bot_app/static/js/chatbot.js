@@ -100,6 +100,40 @@ function loadChatHistory(chatId) {
     alert(`Load chat history for Chat ${chatId}`);
 }
 
+// chathistory item features 
+function selectChatHistory(chatId) {
+    const chatHistoryList = document.querySelectorAll('.chathistory-item');
+    chatHistoryList.forEach(history => {
+      history.classList.remove('selected');
+    });
+
+    const selectedChatHistory = document.getElementById(`chat${chatId}`);
+    selectedChatHistory.classList.add('selected');
+}
+
+function deleteChatHistory(chatId) {
+    const deletedChatHistory = document.getElementById(`chat${chatId}`);
+    deletedChatHistory.style.transition = 'margin 0.5s';
+    deletedChatHistory.style.marginLeft = '-250px'; // Adjust this value based on the width of your sidebar
+    setTimeout(() => {
+      deletedChatHistory.remove();
+    }, 500);
+}
+
+function toggleStar(chatId) {
+    const starIcon = document.querySelector(`#chat${chatId} .fa-star`);
+    starIcon.classList.toggle('fas');
+    starIcon.classList.toggle('far');
+    // Add your logic for handling star status here
+}
+
+// prevent background color change when clicking on icons
+document.querySelectorAll('.chathistory-item i').forEach(icon => {
+    icon.addEventListener('click', function(event) {
+      event.stopPropagation();
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
     var theme; 

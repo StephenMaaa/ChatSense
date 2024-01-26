@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Google Fonts Link For Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     {{ data|json_script:"data" }}
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
@@ -29,12 +30,22 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-      <div class="chatgpt-layout chathistory-item">
+      <div class="newchat-btn">
         New Chat
       </div>
-      <div>
-        <div class="chathistory-item" onclick="selectModel('codellama')">Code Llama</div>
-        <div class="chathistory-item" onclick="selectModel('clip')">CLIP</div>
+      <div class="chat-history">
+        <div class="chathistory-item" id="chat1" onclick="selectChatHistory(1)">Code Llama
+          <div class="icons">
+            <i class="fas fa-trash" onclick="deleteChatHistory(1)"></i>
+            <i class="star far fa-star" onclick="toggleStar(1)"></i>
+          </div>
+        </div>
+        <div class="chathistory-item" id="chat2" onclick="selectChatHistory(2)">CLIP
+          <div class="icons">
+            <i class="fas fa-trash" onclick="deleteChatHistory(2)"></i>
+            <i class="star far fa-star" onclick="toggleStar(2)"></i>
+          </div>
+        </div>
       </div>
     </div>
 
