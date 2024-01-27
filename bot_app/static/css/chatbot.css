@@ -32,9 +32,10 @@
 }
 
 body {
-  overflow: hidden; 
   height: 100%; 
   background: var(--outgoing-chat-bg); 
+  /* overflow: hidden; */
+  overflow: auto;
 }
 
 /* header styles */
@@ -55,7 +56,7 @@ header {
   align-items: center;
   cursor: pointer;
   position: relative;
-  margin-left: 20px; /* Move dropdown select to the left corner */
+  margin-left: 0px; /* Move dropdown select to the left corner */
 }
 
 .dropdown-header {
@@ -234,7 +235,37 @@ header {
   margin-left: 20px; /* Move dropdown select to the left corner */
 }
 
-:where(.chat-container, input)::-webkit-scrollbar {
+.chat-container {
+  overflow-y: auto;
+  /* scrollbar-width: thin;
+  scrollbar-color: #00BFFF #f0f0f0; */
+}
+
+ /* scroll bar styles */
+::-webkit-scrollbar {
+  height: 1rem;
+  width: .5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 9999px
+}
+
+::-webkit-scrollbar-thumb {
+  --tw-border-opacity: 1;
+  background-color: hsla(0,0%,100%,.1);
+  border-color: rgba(255,255,255,var(--tw-border-opacity));
+  border-radius: 9999px;
+  border-width: 1px
+}
+
+::-webkit-scrollbar-thumb:hover {
+  --tw-bg-opacity: 1;
+  background-color: hsla(0,0%,100%,.3); 
+}
+
+/* :where(.chat-container, input)::-webkit-scrollbar {
   width: 6px;
 }
 
@@ -246,7 +277,7 @@ header {
 :where(.chat-container, input)::-webkit-scrollbar-thumb {
   background: var(--icon-color);
   border-radius: 25px;
-}
+} */
 
 .default-text {
   display: flex;
