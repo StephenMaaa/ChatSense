@@ -32,9 +32,10 @@
 }
 
 body {
-  overflow: hidden; 
   height: 100%; 
   background: var(--outgoing-chat-bg); 
+  /* overflow: hidden; */
+  overflow: auto;
 }
 
 /* header styles */
@@ -55,7 +56,7 @@ header {
   align-items: center;
   cursor: pointer;
   position: relative;
-  margin-left: 20px; /* Move dropdown select to the left corner */
+  margin-left: 0px; /* Move dropdown select to the left corner */
 }
 
 .dropdown-header {
@@ -103,14 +104,169 @@ header {
   display: block;
 }
 
-/* Chats container styling */
-.chat-container {
+/* Side bar window styles */
+.sidebar {
+  /* display: flex; */
+  justify-content: center; /* This centers the inner div horizontally */
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0; /* Move sidebar to the left */
+  background-color: #000;
+  overflow-x: hidden;
   overflow-y: auto;
-  max-height: 100vh;
-  padding-bottom: 150px;
+  transition: 0.5s;
+  padding-top: 10px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
 }
 
-:where(.chat-container, input)::-webkit-scrollbar {
+.open-btn {
+  font-size: 24px;
+  cursor: pointer;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: #ffffff;
+  transition: left 0.5s; /* Add transition for smooth movement */
+}
+
+.open-btn:hover {
+  color: #aaaaaa;
+}
+
+/* Chat history style (adjust as needed) */
+/* .chat-history {
+  padding: 20px;
+  color: #333333;
+  transition: margin-left 0.5s; 
+  cursor: pointer; 
+  border-bottom: 1px solid #455a64;
+} */
+
+/* .chat-history:hover {
+  background-color: #555555;
+  color: #ffffff;
+} */
+
+/* Class for elements that need their width adjusted */
+.adjust-width {
+  margin-left: 0;
+  transition: margin-left 0.5s; /* Add transition for smooth movement */
+}
+
+.adjust-left {
+  margin-left: -5.5%;
+  transition: margin-left 0.5s; /* Add transition for smooth movement */
+}
+
+/* ChatGPT-styled layout */
+.newchat-btn {
+  position: sticky;
+  top: 0;
+  color: #ffffff;
+  padding: 10px;
+  width: 90%;
+  margin: 0 5%;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center; /* center the text */
+  color: #ffffff;
+  background-color: var(--model-background-color); /* set the background color */ 
+  border-radius: 4px; 
+  font-weight: bold; 
+  z-index: 2;
+}
+
+.chathistory-item {
+  width: 90%;
+  margin: 0 5%;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center; /* center the text */
+  color: #ffffff;
+  background-color: var(--model-background-color); /* set the background color */ 
+  border-radius: 4px; 
+  display: flex;
+  transition: margin-left 0.5s;
+  justify-content: space-between;
+  /* font-weight: bold;  */
+  z-index: 2;
+}
+
+/* chathistory item icons */
+.chathistory-item .icons {
+  display: none;
+  align-items: center;
+  /* padding: 10px; */
+}
+
+.chathistory-item:hover .icons {
+  display: flex;
+}
+
+.chathistory-item i.star {
+  color: #fdd835; /* Yellow color for filled star */
+  cursor: pointer;
+  margin-left: 5px; /* Adjusted margin for less space */
+}
+
+.newchat-btn:hover, .chathistory-item:hover {
+  background-color: #202123;
+}
+
+.chathistory-item.selected {
+  background-color: #343541;
+  color: #ffffff;
+}
+
+.chathistory-item i:not(:last-child) {
+  margin-right: 10px; /* Add margin between icons */
+}
+
+.side-bar-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  margin-left: 20px; /* Move dropdown select to the left corner */
+}
+
+.chat-container {
+  overflow-y: auto;
+  /* scrollbar-width: thin;
+  scrollbar-color: #00BFFF #f0f0f0; */
+}
+
+ /* scroll bar styles */
+::-webkit-scrollbar {
+  height: 1rem;
+  width: .5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 9999px
+}
+
+::-webkit-scrollbar-thumb {
+  --tw-border-opacity: 1;
+  background-color: hsla(0,0%,100%,.1);
+  border-color: rgba(255,255,255,var(--tw-border-opacity));
+  border-radius: 9999px;
+  border-width: 1px
+}
+
+::-webkit-scrollbar-thumb:hover {
+  --tw-bg-opacity: 1;
+  background-color: hsla(0,0%,100%,.3); 
+}
+
+/* :where(.chat-container, input)::-webkit-scrollbar {
   width: 6px;
 }
 
@@ -122,7 +278,7 @@ header {
 :where(.chat-container, input)::-webkit-scrollbar-thumb {
   background: var(--icon-color);
   border-radius: 25px;
-}
+} */
 
 .default-text {
   display: flex;
@@ -163,7 +319,7 @@ header {
 
 .chat .chat-content {
   display: flex;
-  max-width: 1200px;
+  max-width: 1150px;
   width: 100%;
   align-items: flex-start;
   justify-content: space-between;

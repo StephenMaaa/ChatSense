@@ -50,6 +50,109 @@ logoutButton.addEventListener("click", () => {
     window.location.href = "/"; 
 });
 
+// side bar window 
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const openBtn = document.querySelector('.open-btn');
+    // const content = document.getElementById('mainContent');
+    const elementsToAdjust = document.querySelectorAll('.adjust-width');
+    const elementsToAdjust2 = document.querySelectorAll('.adjust-left');
+    const isOpen = sidebar.style.width === '250px';
+
+    if (isOpen) {
+      sidebar.style.width = '0';
+      openBtn.style.left = '0';
+      // content.style.marginLeft = '0';
+      elementsToAdjust.forEach(element => {
+        element.style.marginLeft = '0';
+      });
+      elementsToAdjust2.forEach(element => {
+        element.style.marginLeft = '-5.5%';
+      });
+    } else {
+      sidebar.style.width = '250px';
+      openBtn.style.left = '250px';
+      // content.style.marginLeft = '250px';
+      elementsToAdjust.forEach(element => {
+        element.style.marginLeft = '250px';
+      });
+      elementsToAdjust2.forEach(element => {
+        element.style.marginLeft = '-15%';
+      });
+    }
+}
+
+function showChat(chatId) {
+    // hide all chat history
+    document.querySelectorAll('.chat-history').forEach((chat) => {
+      chat.style.display = 'none';
+});
+
+// show the selected chat history
+const selectedChat = document.getElementById(`chat${chatId}`);
+    if (selectedChat) {
+      selectedChat.style.display = 'block';
+    }
+}
+
+function loadChatHistory(chatId) {
+    // replace this with your logic to load and display the chat history based on chatId
+    alert(`Load chat history for Chat ${chatId}`);
+}
+
+// chathistory item features 
+function selectChatHistory(chatId) {
+    const chatHistoryList = document.querySelectorAll('.chathistory-item');
+    chatHistoryList.forEach(history => {
+      history.classList.remove('selected');
+    });
+
+    const selectedChatHistory = document.getElementById(`chat${chatId}`);
+    selectedChatHistory.classList.add('selected');
+}
+
+function deleteChatHistory(chatId) {
+    const deletedChatHistory = document.getElementById(`chat${chatId}`);
+    deletedChatHistory.style.transition = 'margin 0.5s';
+    deletedChatHistory.style.marginLeft = '-250px'; // Adjust this value based on the width of your sidebar
+    setTimeout(() => {
+      deletedChatHistory.remove();
+    }, 500);
+}
+
+function toggleStar(chatId) {
+    const starIcon = document.querySelector(`#chat${chatId} .fa-star`);
+    starIcon.classList.toggle('fas');
+    starIcon.classList.toggle('far');
+    // Add your logic for handling star status here
+}
+
+// prevent background color change when clicking on icons
+document.querySelectorAll('.chathistory-item i').forEach(icon => {
+    icon.addEventListener('click', function(event) {
+      event.stopPropagation();
+    });
+});
+
+// manage scroll bars 
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.getElementById('sidebar');
+
+    document.addEventListener('mousemove', function (event) {
+      const x = event.clientX;
+
+      if (x < sidebar.offsetWidth) {
+        // Cursor is in the sidebar
+        sidebar.style.overflowY = 'auto';
+        document.style.overflowY = 'hidden';
+      } else {
+        // Cursor is in the main content
+        sidebar.style.overflowY = 'hidden';
+        document.style.overflowY = 'auto';
+      }
+    });
+  });
+
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
     var theme; 
