@@ -130,28 +130,29 @@ function toggleStar(chatId) {
 // prevent background color change when clicking on icons
 document.querySelectorAll('.chathistory-item i').forEach(icon => {
     icon.addEventListener('click', function(event) {
-      event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
     });
 });
 
-// manage scroll bars 
-document.addEventListener('DOMContentLoaded', function () {
-    const sidebar = document.getElementById('sidebar');
+// // manage scroll bars 
+// document.addEventListener('DOMContentLoaded', function () {
+//     const sidebar = document.getElementById('sidebar');
 
-    document.addEventListener('mousemove', function (event) {
-      const x = event.clientX;
+//     document.addEventListener('mousemove', function (event) {
+//       const x = event.clientX;
 
-      if (x < sidebar.offsetWidth) {
-        // Cursor is in the sidebar
-        sidebar.style.overflowY = 'auto';
-        document.style.overflowY = 'hidden';
-      } else {
-        // Cursor is in the main content
-        sidebar.style.overflowY = 'hidden';
-        document.style.overflowY = 'auto';
-      }
-    });
-  });
+//       if (x < sidebar.offsetWidth) {
+//         // Cursor is in the sidebar
+//         sidebar.style.overflowY = 'hidden';
+//         document.style.overflowY = 'hidden';
+//       } else {
+//         // Cursor is in the main content
+//         sidebar.style.overflowY = 'hidden';
+//         document.style.overflowY = 'hidden';
+//       }
+//     });
+// });
 
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 

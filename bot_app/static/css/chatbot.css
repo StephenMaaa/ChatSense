@@ -34,7 +34,6 @@
 body {
   height: 100%; 
   background: var(--outgoing-chat-bg); 
-  /* overflow: hidden; */
   overflow: hidden;
 }
 
@@ -121,8 +120,7 @@ header {
   top: 0;
   left: 0; /* Move sidebar to the left */
   background-color: #000;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden; 
   transition: 0.5s;
   padding-top: 10px;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
@@ -145,13 +143,11 @@ header {
 }
 
 /* Chat history style (adjust as needed) */
-/* .chat-history {
-  padding: 20px;
-  color: #333333;
-  transition: margin-left 0.5s; 
-  cursor: pointer; 
-  border-bottom: 1px solid #455a64;
-} */
+.chat-history {
+  overflow-y: auto;
+  max-height: 100vh;
+  /* padding-bottom: 40px; */
+}
 
 /* .chat-history:hover {
   background-color: #555555;
@@ -203,6 +199,7 @@ header {
   justify-content: space-between;
   /* font-weight: bold;  */
   z-index: 2;
+  user-select: none;
 }
 
 /* chathistory item icons */
