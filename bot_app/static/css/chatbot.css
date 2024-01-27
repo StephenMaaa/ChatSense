@@ -115,6 +115,7 @@ header {
   left: 0; /* Move sidebar to the left */
   background-color: #000;
   overflow-x: hidden;
+  overflow-y: auto;
   transition: 0.5s;
   padding-top: 10px;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
