@@ -35,7 +35,7 @@ body {
   height: 100%; 
   background: var(--outgoing-chat-bg); 
   /* overflow: hidden; */
-  overflow: auto;
+  overflow: hidden;
 }
 
 /* header styles */
@@ -102,6 +102,13 @@ header {
 
 .model-dropdown.clicked .dropdown-list {
   display: block;
+}
+
+/* Chats container styling */
+.chat-container {
+  overflow-y: auto;
+  max-height: 100vh;
+  padding-bottom: 150px;
 }
 
 /* Side bar window styles */
@@ -234,12 +241,6 @@ header {
   cursor: pointer;
   position: relative;
   margin-left: 20px; /* Move dropdown select to the left corner */
-}
-
-.chat-container {
-  overflow-y: auto;
-  /* scrollbar-width: thin;
-  scrollbar-color: #00BFFF #f0f0f0; */
 }
 
  /* scroll bar styles */
