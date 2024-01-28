@@ -37,6 +37,8 @@ body {
   overflow: hidden;
 }
 
+
+
 /* header styles */
 header {
   /* background-color: #4a4a4a; */
@@ -46,8 +48,14 @@ header {
   color: var(--text-color);
   padding: 10px;
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
+}
+
+.appHeader span {
+  height: 45px;
+  width: 45px;
+  /* margin-left: 0px; */
 }
 
 .model-dropdown {
@@ -101,6 +109,15 @@ header {
 
 .model-dropdown.clicked .dropdown-list {
   display: block;
+}
+
+#logout-btn {
+  margin-left: auto;
+}
+
+#newchat-main-btn {
+  display: flex; 
+  margin-right: 5px;
 }
 
 /* Chats container styling */
@@ -181,7 +198,10 @@ header {
   background-color: var(--model-background-color); /* set the background color */ 
   border-radius: 4px; 
   font-weight: bold; 
-  z-index: 2;
+  /* z-index: 2; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
 }
 
 .chathistory-item {
@@ -221,6 +241,11 @@ header {
 
 .newchat-btn:hover, .chathistory-item:hover {
   background-color: #202123;
+}
+
+#newchat-icon {
+  display: flex;
+  align-items: center;
 }
 
 .chathistory-item.selected {
@@ -498,7 +523,13 @@ input#query-box.chat-input {
   display: flex;
 }
 
-.appHeader span, .typing-controls span {
+.appHeader span {
+  font-size: 1.4rem;
+  background: var(--incoming-chat-bg);
+  outline: 1px solid var(--incoming-chat-border);
+}
+
+.typing-controls span {
   margin-left: 7px;
   font-size: 1.4rem;
   background: var(--incoming-chat-bg);
@@ -571,7 +602,7 @@ input#query-box.chat-input {
     padding: 10px 40px 10px 10px;
   }
 
-  .appHeader span, .typing-content span button {
+  .typing-content span button {
     height: 45px;
     width: 45px;
     margin-left: 5px;

@@ -15,6 +15,7 @@
   </head>
   <body>
     <header class="appHeader adjust-width" onmouseleave="hideDropdown()" id="header">
+      <span id="newchat-main-btn" class="material-symbols-rounded">edit_square</span>
       <div class="model-dropdown" id="modelDropdown" onmouseenter="showDropdown()">
         <div class="dropdown-header" onclick="toggleDropdown()">Llama 2</div>
         <div class="dropdown-list" onmouseleave="hideDropdown()">
@@ -31,7 +32,10 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
       <div class="newchat-btn">
-        New Chat
+        <div>New Chat</div>
+        <!-- New Chat -->
+        <!-- <span class="material-symbols-rounded">edit_square</span> -->
+        <i class="material-symbols-rounded" id="newchat-icon">edit_square</i>
       </div>
       <div class="chat-history">
         <div class="chathistory-item" id="chat1" onclick="selectChatHistory(1)">Code Llama

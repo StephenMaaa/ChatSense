@@ -4,6 +4,8 @@ const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
+const newchatButton = document.querySelector(".newchat-btn");
+const newchatMainButton = document.querySelector("#newchat-main-btn");
 const model = document.querySelector(".dropdown-header");
 let userText = null;
 
@@ -54,15 +56,15 @@ logoutButton.addEventListener("click", () => {
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const openBtn = document.querySelector('.open-btn');
-    // const content = document.getElementById('mainContent');
     const elementsToAdjust = document.querySelectorAll('.adjust-width');
     const elementsToAdjust2 = document.querySelectorAll('.adjust-left');
     const isOpen = sidebar.style.width === '250px';
 
     if (isOpen) {
+      console.log("opened"); 
       sidebar.style.width = '0';
       openBtn.style.left = '0';
-      // content.style.marginLeft = '0';
+      newchatMainButton.style.display = "flex";
       elementsToAdjust.forEach(element => {
         element.style.marginLeft = '0';
       });
@@ -72,6 +74,7 @@ function toggleSidebar() {
     } else {
       sidebar.style.width = '250px';
       openBtn.style.left = '250px';
+      newchatMainButton.style.display = "none";
       // content.style.marginLeft = '250px';
       elementsToAdjust.forEach(element => {
         element.style.marginLeft = '250px';
@@ -134,6 +137,14 @@ document.querySelectorAll('.chathistory-item i').forEach(icon => {
         event.stopPropagation();
     });
 });
+
+// create new chat 
+function createNewChat() {
+    console.log("created"); 
+}
+
+newchatButton.addEventListener("click", createNewChat); 
+newchatMainButton.addEventListener("click", createNewChat); 
 
 // // manage scroll bars 
 // document.addEventListener('DOMContentLoaded', function () {
