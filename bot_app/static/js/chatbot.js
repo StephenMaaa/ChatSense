@@ -4,6 +4,8 @@ const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
+const newchatButton = document.querySelector(".newchat-btn");
+const newchatMainButton = document.querySelector("#newchat-main-btn");
 const model = document.querySelector(".dropdown-header");
 let userText = null;
 
@@ -54,15 +56,15 @@ logoutButton.addEventListener("click", () => {
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const openBtn = document.querySelector('.open-btn');
-    // const content = document.getElementById('mainContent');
     const elementsToAdjust = document.querySelectorAll('.adjust-width');
     const elementsToAdjust2 = document.querySelectorAll('.adjust-left');
     const isOpen = sidebar.style.width === '250px';
 
     if (isOpen) {
+      console.log("opened"); 
       sidebar.style.width = '0';
       openBtn.style.left = '0';
-      // content.style.marginLeft = '0';
+      newchatMainButton.style.display = "flex";
       elementsToAdjust.forEach(element => {
         element.style.marginLeft = '0';
       });
@@ -72,6 +74,7 @@ function toggleSidebar() {
     } else {
       sidebar.style.width = '250px';
       openBtn.style.left = '250px';
+      newchatMainButton.style.display = "none";
       // content.style.marginLeft = '250px';
       elementsToAdjust.forEach(element => {
         element.style.marginLeft = '250px';
@@ -130,28 +133,37 @@ function toggleStar(chatId) {
 // prevent background color change when clicking on icons
 document.querySelectorAll('.chathistory-item i').forEach(icon => {
     icon.addEventListener('click', function(event) {
-      event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
     });
 });
 
-// manage scroll bars 
-document.addEventListener('DOMContentLoaded', function () {
-    const sidebar = document.getElementById('sidebar');
+// create new chat 
+function createNewChat() {
+    console.log("created"); 
+}
 
-    document.addEventListener('mousemove', function (event) {
-      const x = event.clientX;
+newchatButton.addEventListener("click", createNewChat); 
+newchatMainButton.addEventListener("click", createNewChat); 
 
-      if (x < sidebar.offsetWidth) {
-        // Cursor is in the sidebar
-        sidebar.style.overflowY = 'auto';
-        document.style.overflowY = 'hidden';
-      } else {
-        // Cursor is in the main content
-        sidebar.style.overflowY = 'hidden';
-        document.style.overflowY = 'auto';
-      }
-    });
-  });
+// // manage scroll bars 
+// document.addEventListener('DOMContentLoaded', function () {
+//     const sidebar = document.getElementById('sidebar');
+
+//     document.addEventListener('mousemove', function (event) {
+//       const x = event.clientX;
+
+//       if (x < sidebar.offsetWidth) {
+//         // Cursor is in the sidebar
+//         sidebar.style.overflowY = 'hidden';
+//         document.style.overflowY = 'hidden';
+//       } else {
+//         // Cursor is in the main content
+//         sidebar.style.overflowY = 'hidden';
+//         document.style.overflowY = 'hidden';
+//       }
+//     });
+// });
 
 document.addEventListener('DOMContentLoaded', function() {
     // load theme 
