@@ -36,10 +36,10 @@ def llamaHomepage(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
     # chathistory_id = request.session["chat"]
-    data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
-    data = list(data.values())
-    print(data)
-    return render(request, 'index.html', {'data': data}) 
+    # data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
+    # data = list(data.values())
+    # print(data)
+    return render(request, 'index.html') 
 
 # def loadChatHistory(request): 
 
@@ -117,8 +117,8 @@ def fetchResponseFromModel(request, query):
     response = output
     print(response)
     user: User = User.objects.get(name=request.session["username"]) 
-    chathistory_id: ChatHistories = ChatHistories.objects.get(chathistory_id=request.session["chathistory_id"])
-    queries = UserQueries(question_text=query_text, query_response=response, user_id=user, chathistory_id=chathistory_id)
+    chathistory_id: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=request.session["chathistory_id"])
+    queries = UserQueries(question_text=query_text, query_response=response, chathistory_id=chathistory_id)
     queries.save()              # saves the query and response into database.
     query_resp = {
         'question_text':queries.question_text,

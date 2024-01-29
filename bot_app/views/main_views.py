@@ -10,7 +10,7 @@ from django.conf import settings
 from ..forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries
+from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries, ChatHistories
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -59,14 +59,18 @@ def deleteChats(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
 
+    chatHistory = request.POST.get("chathistory_id")
     model_name = request.POST.get("model_name")
+    print(chatHistory)
+    chathistory_id: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=chatHistory)
+    print(chathistory_id)
     if (model_name == "Llama 2"): 
-        UserQueries.objects.filter(user_id=user).delete() 
+        UserQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     elif (model_name == "Code Llama"): 
-        CodeQueries.objects.filter(user_id=user).delete() 
+        CodeQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     else: 
-        ImageQueries.objects.filter(user_id=user).delete() 
-    return JsonResponse({'message': 'History cleared successfully'})
+        ImageQueries.objects.filter(chathistory_id=chathistory_id).delete() 
+    return JsonResponse({'message': 'History cleared successfully'}) 
 
 
 # signin 

@@ -118,11 +118,34 @@ function selectChatHistory(chatId) {
 
 function deleteChatHistory(chatId) {
     const deletedChatHistory = document.getElementById(`chat${chatId}`);
+
+    // delete from backend 
+    // remove the chats from local storage 
+    $.post('delete_chats', 
+    {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        chathistory_id: chatId, 
+        model_name: model.textContent
+    }, 
+    function(data) {
+        console.log("Successfully delete!"); 
+    });
+
     deletedChatHistory.style.transition = 'margin 0.5s';
-    deletedChatHistory.style.marginLeft = '-250px'; // Adjust this value based on the width of your sidebar
+    deletedChatHistory.style.marginLeft = '-250px'; // adjust this value based on the width of your sidebar
     setTimeout(() => {
       deletedChatHistory.remove();
     }, 500);
+    
+    // reload empty chat container 
+    console.log(model.textContent); 
+    if (model.textContent === "Llama 2") {
+        loadLlamaChatHistory(null); 
+    } else if (model.textContent === "CLIP") {
+        loadCLIPChatHistory(null); 
+    } else if (model.textContent === "Code Llama") {
+        loadLlamaChatHistory(null); 
+    }
 }
 
 function toggleStar(chatId) {
@@ -141,24 +164,35 @@ document.querySelectorAll('.chathistory-item i').forEach(icon => {
 });
 
 // create new chat 
-function createNewChat(event) {
-    var clickedElement = event.target; 
-    console.log(clickedElement.dataset.info); 
-    clickedElement.dataset.info = "changed"; 
-    console.log(clickedElement.dataset.info); 
+function createNewChat() {
+    // reload empty chat container 
+    console.log(model.textContent); 
+    if (model.textContent === "Llama 2") {
+        loadLlamaChatHistory(null); 
+    } else if (model.textContent === "CLIP") {
+        loadCLIPChatHistory(null); 
+    } else if (model.textContent === "Code Llama") {
+        loadLlamaChatHistory(null); 
+    }
+
+    // remove selected chat history 
+    const chatHistoryList = document.querySelectorAll('.chathistory-item');
+    chatHistoryList.forEach(history => {
+      history.classList.remove('selected');
+    });
 }
 
 newchatButton.addEventListener("click", createNewChat); 
 newchatMainButton.addEventListener("click", createNewChat); 
 
 function updateSideBarList(chat_data) {
-    var selectedChatHistory = document.getElementById(chat_data.chathistory_id); 
+    var selectedChatHistory = document.getElementById(`chat${chat_data.chathistory_id}`); 
 
     // check existence 
     if (selectedChatHistory) {
         // update (move to the top of the list) 
-        selectedChatHistory.parentNode.removeChild(selectedChatHistory); 
-        selectedChatHistory.parentNode.insertBefore(selectedChatHistory, selectedChatHistory.parentNode.firstChild); 
+        chatHistoryContainer.removeChild(selectedChatHistory); 
+        chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryContainer.firstChild); 
     } else {
         var chatHistoryDiv = createChatHistory(chat_data); 
         chatHistoryContainer.insertBefore(chatHistoryDiv, chatHistoryContainer.firstChild); 
@@ -167,13 +201,15 @@ function updateSideBarList(chat_data) {
 }
 
 function createChatHistory(chat_data) {
-    const prompt_html = `<div class="chathistory-item" id="chat${chat_data.chathistory_id}" onclick="selectChatHistory('${chat_data.chathistory_id}')">${chat_data.question_text}
+    const chatHistoryDiv = document.createElement("div");
+    const prompt_html = `${chat_data.question_text}
                             <div class="icons">
                             <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
                             <i class="star far fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
-                            </div>
-                        </div>`; 
-    const chatHistoryDiv = document.createElement("div"); 
+                            </div>` 
+    chatHistoryDiv.className = "chathistory-item"; 
+    chatHistoryDiv.setAttribute('onclick', `selectChatHistory('${chat_data.chathistory_id}')`);
+    chatHistoryDiv.id = `chat${chat_data.chathistory_id}`;  
     chatHistoryDiv.innerHTML = prompt_html; 
     return chatHistoryDiv; 
 }
@@ -369,7 +405,7 @@ const fetchResponse = async (incomingChatDiv) => {
         // check init 
         const selectedChatHistory = document.querySelector('.chat-history .selected'); 
         if (selectedChatHistory != null) {
-            formData.append('chathistory_id', selectedChatHistory.id);
+            formData.append('chathistory_id', selectedChatHistory.id.substring(4));
         } else {
             formData.append('chathistory_id', 'empty'); 
         }
