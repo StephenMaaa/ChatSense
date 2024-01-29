@@ -16,15 +16,22 @@ class SessionDetails(models.Model):
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     session_id = models.CharField(max_length=60)
-    login_time = models.DateTimeField()
+    chathistory_id = models.CharField(max_length=60, blank=True, null=True)
+    login_time = models.DateTimeField(auto_now_add=True)
 
+class ChatHistories(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    chathistory_id = models.CharField(max_length=100, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 class UserQueries(models.Model):
     id = models.AutoField(primary_key=True)
     question_text = models.CharField(max_length=200)
     query_response = models.CharField(max_length=1000)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    timestamp = models.TimeField(null=True)
+    chathistory_id = models.ForeignKey(ChatHistories, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.question_text
@@ -35,7 +42,8 @@ class CodeQueries(models.Model):
     question_text = models.CharField(max_length=200)
     query_response = models.CharField(max_length=1000)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    timestamp = models.TimeField(null=True)
+    chathistory_id = models.ForeignKey(ChatHistories, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.question_text
@@ -51,10 +59,11 @@ class Theme(models.Model):
 class ImageQueries(models.Model):
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    chathistory_id = models.ForeignKey(ChatHistories, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
     image = models.ImageField(upload_to='images/')
     image_response = models.ImageField(upload_to='images/')
-    timestamp = models.TimeField(null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.question_text, self.image, self.image_response

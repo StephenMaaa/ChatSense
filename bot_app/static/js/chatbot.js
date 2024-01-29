@@ -2,6 +2,7 @@ const chatInput = document.querySelector(".chat-input");
 const logoutButton = document.querySelector("#logout-btn");
 const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
+const chatHistoryContainer = document.querySelector(".chat-history");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 const newchatButton = document.querySelector(".newchat-btn");
@@ -105,6 +106,7 @@ function loadChatHistory(chatId) {
 
 // chathistory item features 
 function selectChatHistory(chatId) {
+    console.log("here"); 
     const chatHistoryList = document.querySelectorAll('.chathistory-item');
     chatHistoryList.forEach(history => {
       history.classList.remove('selected');
@@ -139,12 +141,42 @@ document.querySelectorAll('.chathistory-item i').forEach(icon => {
 });
 
 // create new chat 
-function createNewChat() {
-    console.log("created"); 
+function createNewChat(event) {
+    var clickedElement = event.target; 
+    console.log(clickedElement.dataset.info); 
+    clickedElement.dataset.info = "changed"; 
+    console.log(clickedElement.dataset.info); 
 }
 
 newchatButton.addEventListener("click", createNewChat); 
 newchatMainButton.addEventListener("click", createNewChat); 
+
+function updateSideBarList(chat_data) {
+    var selectedChatHistory = document.getElementById(chat_data.chathistory_id); 
+
+    // check existence 
+    if (selectedChatHistory) {
+        // update (move to the top of the list) 
+        selectedChatHistory.parentNode.removeChild(selectedChatHistory); 
+        selectedChatHistory.parentNode.insertBefore(selectedChatHistory, selectedChatHistory.parentNode.firstChild); 
+    } else {
+        var chatHistoryDiv = createChatHistory(chat_data); 
+        chatHistoryContainer.insertBefore(chatHistoryDiv, chatHistoryContainer.firstChild); 
+        selectChatHistory(chat_data.chathistory_id); 
+    }
+}
+
+function createChatHistory(chat_data) {
+    const prompt_html = `<div class="chathistory-item" id="chat${chat_data.chathistory_id}" onclick="selectChatHistory('${chat_data.chathistory_id}')">${chat_data.question_text}
+                            <div class="icons">
+                            <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
+                            <i class="star far fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
+                            </div>
+                        </div>`; 
+    const chatHistoryDiv = document.createElement("div"); 
+    chatHistoryDiv.innerHTML = prompt_html; 
+    return chatHistoryDiv; 
+}
 
 // // manage scroll bars 
 // document.addEventListener('DOMContentLoaded', function () {
@@ -331,10 +363,17 @@ const createChatElement = (content, className) => {
 const fetchResponse = async (incomingChatDiv) => {
     // handleOutgoingChat();  
     try{
-        // const loadDiv = document.getElementById('loadingDiv');
-        // loadDiv.style.display = 'block';
         const form = document.getElementById('form-query');
-        const formData = new FormData(form);
+        const formData = new FormData(form); 
+
+        // check init 
+        const selectedChatHistory = document.querySelector('.chat-history .selected'); 
+        if (selectedChatHistory != null) {
+            formData.append('chathistory_id', selectedChatHistory.id);
+        } else {
+            formData.append('chathistory_id', 'empty'); 
+        }
+        formData.append('model_name', model.textContent); 
         
         // fetch response from Llama2/CLIP 
         var response; 
@@ -345,11 +384,14 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
             const chat_data = await response.json();
+            console.log(chat_data.chathistory_id); 
             element.textContent = chat_data.query_response; 
+
+            // update side bar 
+            updateSideBarList(chat_data); 
         } else if (model.textContent === "Code Llama") {
             response = await fetch('fetch_code', {
                 method:'POST',
@@ -382,8 +424,8 @@ const fetchResponse = async (incomingChatDiv) => {
         form.reset();
     }catch(error){
         console.error('There was a error with fetching the response : ', error);
-        pElement.classList.add("error");
-        pElement.textContent = "Oops! Something went wrong while retrieving the response. Please try again.";
+        element.classList.add("error");
+        element.textContent = "Oops! Something went wrong while retrieving the response. Please try again.";
         return ''; 
     }
 

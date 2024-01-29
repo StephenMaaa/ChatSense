@@ -17,6 +17,9 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import threading
 from .llama_views import llamaHomepage
 from .cilp_views import clipHomepage
+import uuid
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 # # clip imports 
 # import torch
@@ -89,8 +92,7 @@ def createsession(request, user, username):
     session["username"] = username
     session.create()
     request.session = session
-    session_details = SessionDetails(user_id=user, session_id=session.session_key,
-                                     login_time=timezone.now())
+    session_details = SessionDetails(user_id=user, session_id=session.session_key)
     session_details.save()
 
 
@@ -107,3 +109,26 @@ def signup(request):
             return redirect(llamaHomepage)
 
     return render(request, 'signup.html') 
+
+# # generate unique id for chat history 
+# def generate_unique_id(model_name): 
+#     check = False; 
+#     unique_id; 
+
+#     while (not check): 
+#         # generate a unique ID (UUID)
+#         unique_id = uuid.uuid4()
+
+#         # convert the UUID to a string if needed
+#         unique_id = str(unique_id) 
+
+#         # check uniqueness 
+#         username = session["username"]
+#         user = User.objects.get(name=username)        
+#         if (model_name == "Llama 2"): 
+#             check = UserQueries.objects.filter(user_id=user).exists()
+#         elif (model_name == "Code Llama"): 
+#             check = CodeQueries.objects.filter(user_id=user).exists() 
+#         else: 
+#             check = ImageQueries.objects.filter(user_id=user).exists()
+#     return unique_id
