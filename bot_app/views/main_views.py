@@ -15,11 +15,9 @@ from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import threading
-from .llama_views import llamaHomepage
-from .cilp_views import clipHomepage
 import uuid
-from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone 
+# from .llama_views import llamaHomepage
 
 # # clip imports 
 # import torch
@@ -34,6 +32,23 @@ import os
 
 # creates a session store. 
 session = SessionStore(session_key=settings.SESSION_KEY) 
+
+# default home page (Llama 2) 
+def llamaHomepage(request):
+    username = request.session["username"]
+    user = User.objects.get(name=username) 
+
+    chatHistories = ChatHistories.objects.filter(user_id=user, model="Llama 2").values('chathistory_id', 'chathistory_title', 'starred', 'timestamp') 
+    chatHistories = list(chatHistories.values()) 
+    data = categorize_dates(chatHistories) 
+    # data = list(data.values())
+
+    for category, items in data.items():
+        if items:
+            print(f"{category}:")
+            for item in items:
+                print(item)  
+    return render(request, 'index.html', {'data': data}) 
 
 @csrf_exempt
 def updateTheme(request):
@@ -65,10 +80,13 @@ def deleteChats(request):
     chathistory_id: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=chatHistory)
     print(chathistory_id)
     if (model_name == "Llama 2"): 
+        ChatHistories.objects.filter(user_id=user, chathistory_id=chatHistory).delete() 
         UserQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     elif (model_name == "Code Llama"): 
+        ChatHistories.objects.filter(user_id=user, chathistory_id=chatHistory).delete() 
         CodeQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     else: 
+        ChatHistories.objects.filter(user_id=user, chathistory_id=chatHistory).delete() 
         ImageQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     return JsonResponse({'message': 'History cleared successfully'}) 
 
@@ -97,8 +115,7 @@ def createsession(request, user, username):
     session.create()
     request.session = session
     session_details = SessionDetails(user_id=user, session_id=session.session_key)
-    session_details.save()
-
+    session_details.save() 
 
 # signup 
 def signup(request):
@@ -140,6 +157,8 @@ def fetchChatHistory(request):
     else: 
         data = ImageQueries.objects.filter(chathistory_id=chathistory_id).values('question_text', 'image', 'image_response') 
     data = list(data.values())
+    for item in data: 
+        print(item)
     return JsonResponse(data, safe=False) 
 
 # update starred status of chat history data 
@@ -148,12 +167,41 @@ def updateStarred(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
 
-    chatHistory = request.POST.get("chathistory_id")
-    starred = request.POST.get("starred") 
-    print(starred)
-
-    ChatHistories.objects.get(user_id=user, chathistory_id=chatHistory).chathistory_title = starred 
+    chatHistory = request.POST.get("chathistory_id") 
+    chatHistory = ChatHistories.objects.get(user_id=user, chathistory_id=chatHistory) 
+    chatHistory.starred = request.POST.get("starred") 
+    chatHistory.save() 
     return JsonResponse({'success': True}) 
+
+# categorize datetimes for side bar window 
+def categorize_dates(data): 
+    # Sort data by datetime in descending order 
+    data.sort(key=lambda x: x['timestamp'], reverse=True)
+    today = datetime.now(timezone.utc)
+    yesterday = today - timedelta(days=1)
+    previous_7_days = today - timedelta(days=7)
+    previous_30_days = today - timedelta(days=30)
+
+    categorized_data = {
+        'Today': [],
+        'Yesterday': [],
+        'Previous 7 Days': [],
+        'Previous 30 Days': [],
+    }
+
+    for item in data:
+        item_date = item['timestamp']
+
+        if item_date.date() == today.date():
+            categorized_data['Today'].append(item)
+        elif item_date.date() == yesterday.date():
+            categorized_data['Yesterday'].append(item)
+        elif item_date >= previous_7_days:
+            categorized_data['Previous 7 Days'].append(item)
+        elif item_date >= previous_30_days:
+            categorized_data['Previous 30 Days'].append(item)
+
+    return categorized_data 
 
 # # generate unique id for chat history 
 # def generate_unique_id(model_name): 

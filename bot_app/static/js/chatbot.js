@@ -99,14 +99,8 @@ const selectedChat = document.getElementById(`chat${chatId}`);
     }
 }
 
-function loadChatHistory(chatId) {
-    // replace this with your logic to load and display the chat history based on chatId
-    alert(`Load chat history for Chat ${chatId}`);
-}
-
 // chathistory item features 
 async function selectChatHistory(chatId) {
-    console.log("here"); 
     const chatHistoryList = document.querySelectorAll('.chathistory-item');
     chatHistoryList.forEach(history => {
       history.classList.remove('selected');
@@ -169,8 +163,15 @@ function deleteChatHistory(chatId) {
     deletedChatHistory.style.transition = 'margin 0.5s';
     deletedChatHistory.style.marginLeft = '-250px'; // adjust this value based on the width of your sidebar
     setTimeout(() => {
-      deletedChatHistory.remove();
-    }, 500);
+        deletedChatHistory.remove(); 
+
+        // edge case: empty list 
+        chatHistoryContainer.querySelectorAll(".date-category").forEach(div => {
+            if (div.nextSibling === null || div.nextSibling.classList.contains("date-category")) {
+                div.remove();   
+            }
+        }); 
+    }, 500); 
     
     // check reloading 
     if (deletedChatHistory.classList.contains("selected")) {
@@ -187,20 +188,42 @@ function deleteChatHistory(chatId) {
 }
 
 function toggleStar(chatId) {
+    const trashIcon = document.querySelector(`#chat${chatId} .fa-trash`);
     const starIcon = document.querySelector(`#chat${chatId} .fa-star`);
     starIcon.classList.toggle('fas');
     starIcon.classList.toggle('far'); 
 
     // update 
+    const starred = starIcon.classList.contains("far") ? "far" : "fas"; 
     $.post('update_starred', 
     {
         csrfmiddlewaretoken: "{{ csrf_token }}",
         chathistory_id: chatId, 
-        starred: starIcon.classList.contains("fas") 
+        starred: starred
     }, 
     function(data) {
         console.log("Successfully update starred!"); 
     });
+}
+
+function showIcons(iconContainer) {
+    // display icons 
+    const trashIcon = iconContainer.querySelector(`.fa-trash`); 
+    const starIcon = iconContainer.querySelector(`.fa-star`); 
+    trashIcon.style.display = "inline-block"; 
+    starIcon.style.display = "inline-block"; 
+}
+
+function hideIcons(iconContainer) {
+    // hide icons 
+    const trashIcon = iconContainer.querySelector(`.fa-trash`); 
+    const starIcon = iconContainer.querySelector(`.fa-star`); 
+
+    // only display starred 
+    trashIcon.style.display = "none"; 
+    if (starIcon.classList.contains("far")) {
+        starIcon.style.display = "none"; 
+    }
 }
 
 function disableOnClick(element) {
@@ -236,25 +259,30 @@ newchatButton.addEventListener("click", createNewChat);
 newchatMainButton.addEventListener("click", createNewChat); 
 
 function updateSideBarList(chat_data) {
+    var chatHistoryToday = document.getElementById("Today-chathistory"); 
     var selectedChatHistory = document.getElementById(`chat${chat_data.chathistory_id}`); 
+
+    // edge case: init 
+    if (chatHistoryToday === null) {
+        // add date separator 
+        const dateDiv = document.createElement("div"); 
+        dateDiv.textContent = "Today"; 
+        dateDiv.className = "date-category"; 
+        dateDiv.classList.add("chathistory-item"); 
+        dateDiv.id = "Today-chathistory"; 
+        chatHistoryContainer.appendChild(dateDiv); 
+        chatHistoryToday = document.getElementById("Today-chathistory"); 
+    }
 
     // check existence 
     if (selectedChatHistory) {
         // update (move to the top of the list) 
         chatHistoryContainer.removeChild(selectedChatHistory); 
-        chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryContainer.firstChild); 
+        chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryToday.nextSibling); 
     } else {
+        // chat_data["starred"] = "far"; 
         var chatHistoryDiv = createChatHistory(chat_data); 
-        chatHistoryContainer.insertBefore(chatHistoryDiv, chatHistoryContainer.firstChild); 
-        // selectChatHistory(chat_data.chathistory_id); 
-
-        // select the new created chat history 
-        // const chatHistoryList = document.querySelectorAll('.chathistory-item');
-        // chatHistoryList.forEach(history => {
-        // history.classList.remove('selected');
-        // });
-
-        // const selectedChatHistory = document.getElementById(`chat${chatId}`);
+        chatHistoryContainer.insertBefore(chatHistoryDiv, chatHistoryToday.nextSibling); 
         chatHistoryDiv.classList.add('selected'); 
     }
 }
@@ -264,13 +292,23 @@ function createChatHistory(chat_data) {
     const prompt_html = `${chat_data.chathistory_title}
                             <div class="icons">
                             <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
-                            <i class="star far fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
+                            <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
                             </div>` 
     chatHistoryDiv.className = "chathistory-item"; 
     chatHistoryDiv.setAttribute('onclick', `selectChatHistory('${chat_data.chathistory_id}')`);
     chatHistoryDiv.id = `chat${chat_data.chathistory_id}`;  
     chatHistoryDiv.innerHTML = prompt_html; 
+
+    // add functionalities 
     disableOnClick(chatHistoryDiv); 
+
+    chatHistoryDiv.addEventListener('mouseover', () => {
+        showIcons(chatHistoryDiv);
+    });
+  
+    chatHistoryDiv.addEventListener('mouseout', () => {
+        hideIcons(chatHistoryDiv);
+    });
     return chatHistoryDiv; 
 }
 
@@ -294,6 +332,14 @@ function createChatHistory(chat_data) {
 // });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // // handle refreshing page 
+    // const navigationEntries = performance.getEntriesByType('navigation');
+    // const isPageRefreshed = navigationEntries.length > 0 && navigationEntries[0].type === 'reload';
+    // if (isPageRefreshed) {
+    //     console.log("yes"); 
+    //     return; 
+    // }
+
     // load theme 
     var theme; 
     $.get('get_theme', function(data) {
@@ -303,25 +349,42 @@ document.addEventListener('DOMContentLoaded', function() {
         themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
     });
 
-    // Retrieve the data_list from the Django template context
-    var chat = JSON.parse(document.getElementById('data').textContent); 
+    // retrieve the data_list from the Django template context
+    var chatHistories = JSON.parse(document.getElementById('data').textContent); 
 
-    // Get the <ul> element by its id
-    // var dataListElement = document.getElementById("dataList");
-
-    // load chat history 
+    // load chat history list in side bar window 
     console.log(model.textContent); 
+    loadChatHistoriesList(chatHistories); 
+
+    // reload empty chat container 
     if (model.textContent === "Llama 2") {
-        console.log("Loading Llama 2");
-        loadLlamaChatHistory(chat); 
+        loadLlamaChatHistory(null); 
     } else if (model.textContent === "CLIP") {
-        console.log("Loading CLIP"); 
-        loadCLIPChatHistory(chat); 
+        loadCLIPChatHistory(null); 
     } else if (model.textContent === "Code Llama") {
-        console.log("Loading Code Llama");
-        loadLlamaChatHistory(chat); 
+        loadLlamaChatHistory(null); 
     }
 });
+
+// load chat history list in side bar window 
+function loadChatHistoriesList(chatHistories) {
+    for (var category in chatHistories) {
+        if (chatHistories[category].length > 0) {
+            // add date separator 
+            const dateDiv = document.createElement("div"); 
+            dateDiv.textContent = category; 
+            dateDiv.className = "date-category"; 
+            dateDiv.classList.add("chathistory-item"); 
+            dateDiv.id = `${category.split(' ').join('')}-chathistory`; 
+            chatHistoryContainer.appendChild(dateDiv); 
+
+            // add chat histories within date 
+            chatHistories[category].forEach(function(item) {
+                chatHistoryContainer.appendChild(createChatHistory(item)); 
+            });
+        }
+    }
+}
 
 // load Llama 2/Code Llama chat history 
 function loadLlamaChatHistory(chat) {

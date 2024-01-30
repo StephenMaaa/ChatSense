@@ -209,7 +209,7 @@ header {
   margin: 0 5%;
   padding: 12px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   text-align: center; /* center the text */
   color: #ffffff;
   background-color: var(--model-background-color); /* set the background color */ 
@@ -224,19 +224,31 @@ header {
 
 /* chathistory item icons */
 .chathistory-item .icons {
-  display: none;
+  display: flex;
   align-items: center;
   /* padding: 10px; */
 }
 
-.chathistory-item:hover .icons {
-  display: flex;
+i.fa-trash {
+  display: none; 
+}
+
+.fa-star.far {
+  display: none; 
+}
+
+.fa-star.fas {
+  display: inline-block; 
+}
+
+.star.fas {
+  display: inline-block; 
 }
 
 .chathistory-item i.star {
-  color: #fdd835; /* Yellow color for filled star */
+  color: #fdd835; /* yellow color for filled star */
   cursor: pointer;
-  margin-left: 5px; /* Adjusted margin for less space */
+  margin-left: 5px; /* adjusted margin for less space */
 }
 
 .newchat-btn:hover, .chathistory-item:hover {
@@ -255,6 +267,24 @@ header {
 
 .chathistory-item i:not(:last-child) {
   margin-right: 10px; /* Add margin between icons */
+}
+
+/* chat history list style */
+.date-category.chathistory-item {
+  color: #999; 
+  font-weight: 500;
+  font-size: .75rem;
+  line-height: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.25rem;
+  padding-right: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+
+.date-category.chathistory-item:hover {
+  background-color: #000000; 
 }
 
 .side-bar-dropdown {

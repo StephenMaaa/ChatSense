@@ -19,7 +19,7 @@ import torch
 import uuid
 from django.utils import timezone
 from datetime import datetime, timedelta
-# from .main_views import generate_unique_id
+# from .main_views import categorize_dates
 
 
 # creates a session store.
@@ -30,16 +30,14 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama", gpu_layers=200)
 
 
-# Displays the previous queries asked by the user.
-def llamaHomepage(request):
-    # print(os.getcwd())
-    username = request.session["username"]
-    user = User.objects.get(name=username)
-    # chathistory_id = request.session["chat"]
-    # data = UserQueries.objects.filter(user_id=user).values('question_text', 'query_response')
-    # data = list(data.values())
-    # print(data)
-    return render(request, 'index.html') 
+# # Displays the previous queries asked by the user.
+# def llamaHomepage(request):
+#     username = request.session["username"]
+#     user = User.objects.get(name=username) 
+
+#     # data = list(data.values())
+#     # print(data)
+#     return render(request, 'index.html') 
 
 # def loadChatHistory(request): 
 
@@ -51,7 +49,7 @@ def create(request, query, model_name):
 
     # process chat history title 
     chathistory_title = process_sentence(query.cleaned_data["query"], 20) 
-    queries = ChatHistories(user_id=user, chathistory_id=unique_id, chathistory_title=chathistory_title)  
+    queries = ChatHistories(user_id=user, chathistory_id=unique_id, chathistory_title=chathistory_title, model=model_name)  
     queries.save()              # saves the query and response into database. 
     # session.chathistory_id = unique_id
     session["chathistory_id"] = unique_id
@@ -146,9 +144,9 @@ def fetchResponseFromModel(request, query):
         'question_text':queries.question_text,
         'query_response':response, 
         'chathistory_id':request.session["chathistory_id"], 
-        'chathistory_title':chathistory_id.chathistory_title
+        'chathistory_title':chathistory_id.chathistory_title, 
+        'starred': chathistory_id.starred 
     }
-    print("id: " + request.session["chathistory_id"])
     return JsonResponse(query_resp)
 
 # generate unique id for chat history 

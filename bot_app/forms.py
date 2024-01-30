@@ -2,7 +2,7 @@ from django import forms
 
 
 class QueryForm(forms.Form):
-    query = forms.CharField(max_length=200)
+    query = forms.CharField(max_length=1000)
 
 
 class SignInForm(forms.Form):
@@ -18,5 +18,5 @@ class ThemeForm(forms.ModelForm):
     theme = forms.CharField(max_length=20)
 
 class ImageForm(forms.Form):
-    query = forms.CharField(max_length=200, required=False)
+    query = forms.CharField(max_length=1000, required=False)
     image = forms.ImageField(required=False)

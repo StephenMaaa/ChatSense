@@ -24,8 +24,9 @@ class ChatHistories(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     chathistory_id = models.CharField(max_length=100, blank=True, null=True)
     chathistory_title = models.CharField(max_length=100)
-    starred = models.BooleanField(default=False) 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    starred = models.CharField(max_length=3, default="far") 
+    model = models.CharField(max_length=20) 
+    timestamp = models.DateTimeField(auto_now_add=True) 
 
 class UserQueries(models.Model):
     id = models.AutoField(primary_key=True)
