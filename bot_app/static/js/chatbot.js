@@ -277,8 +277,9 @@ function updateSideBarList(chat_data) {
     // check existence 
     if (selectedChatHistory) {
         // update (move to the top of the list) 
-        chatHistoryContainer.removeChild(selectedChatHistory); 
-        chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryToday.nextSibling); 
+        // chatHistoryContainer.removeChild(selectedChatHistory); 
+        // chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryToday.nextSibling); 
+        moveBlock(selectedChatHistory); 
     } else {
         // chat_data["starred"] = "far"; 
         var chatHistoryDiv = createChatHistory(chat_data); 
@@ -310,6 +311,41 @@ function createChatHistory(chat_data) {
         hideIcons(chatHistoryDiv);
     });
     return chatHistoryDiv; 
+}
+
+// animation for updating side bar list 
+function moveBlock(selectedBlock) {
+    console.log("start func"); 
+    const blocks = Array.from(chatHistoryContainer.children);
+
+    const selectedBlockIndex = blocks.indexOf(selectedBlock);
+
+    blocks.forEach((currentBlock, index) => {
+        console.log("start animation"); 
+        if (index > 0 && index <= selectedBlockIndex) {
+            var translateYValue = `${currentBlock.offsetHeight}px`; 
+            if (index === selectedBlockIndex) {
+            translateYValue = `${-(index - 1) * currentBlock.offsetHeight}px`; 
+            }
+            currentBlock.style.transform = `translateY(${translateYValue})`; 
+            currentBlock.style.transition = `transform 0.5s ease-in-out, top 0.5s ease-in-out 0.05s`;
+            // currentBlock.style.transition = `transform 0.5s ease-in-out, top 0.5s ease-in-out 0.1s`;
+        }
+    });
+
+    // reset animation 
+    setTimeout(() => {
+        blocks.forEach((currentBlock, index) => {
+            if (index > 0 && index <= selectedBlockIndex) {
+                currentBlock.style.transition = 'none'; // Remove the transition temporarily
+                currentBlock.style.transform = '';
+            }
+        }); 
+        var chatHistoryToday = document.getElementById("Today-chathistory"); 
+        chatHistoryContainer.removeChild(selectedBlock); 
+        chatHistoryContainer.insertBefore(selectedBlock, chatHistoryToday.nextSibling); 
+
+    }, 500);
 }
 
 // // manage scroll bars 

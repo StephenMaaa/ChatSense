@@ -128,7 +128,7 @@ def waitForResult(func, request, query):
     return query
 
 
-# fetches the query response from llama 2 model and saves the respective user's queries in the database.
+# fetches the query response from llama 2 model and saves the respective user's queries in the database 
 def fetchResponseFromModel(request, query):
     query_text = query.cleaned_data["query"]
     print(query_text)
@@ -139,7 +139,12 @@ def fetchResponseFromModel(request, query):
     user: User = User.objects.get(name=request.session["username"]) 
     chathistory_id: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=request.session["chathistory_id"])
     queries = UserQueries(question_text=query_text, query_response=response, chathistory_id=chathistory_id)
-    queries.save()              # saves the query and response into database.
+    queries.save()              # saves the query and response into database 
+
+    # update chat history timestamp 
+    chathistory_id.timestamp = queries.timestamp 
+    chathistory_id.save() 
+
     query_resp = {
         'question_text':queries.question_text,
         'query_response':response, 
