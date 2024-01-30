@@ -2,6 +2,7 @@ const chatInput = document.querySelector(".chat-input");
 const logoutButton = document.querySelector("#logout-btn");
 const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
+const chatHistoryContainer = document.querySelector(".chat-history");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 const newchatButton = document.querySelector(".newchat-btn");
@@ -98,53 +99,254 @@ const selectedChat = document.getElementById(`chat${chatId}`);
     }
 }
 
-function loadChatHistory(chatId) {
-    // replace this with your logic to load and display the chat history based on chatId
-    alert(`Load chat history for Chat ${chatId}`);
-}
-
 // chathistory item features 
-function selectChatHistory(chatId) {
+async function selectChatHistory(chatId) {
     const chatHistoryList = document.querySelectorAll('.chathistory-item');
     chatHistoryList.forEach(history => {
       history.classList.remove('selected');
     });
 
     const selectedChatHistory = document.getElementById(`chat${chatId}`);
-    selectedChatHistory.classList.add('selected');
+    selectedChatHistory.classList.add('selected'); 
+
+    // load chat history 
+    try{
+        const formData = new FormData(); 
+
+        // check init 
+        formData.append('chathistory_id', selectedChatHistory.id.substring(4)); 
+        formData.append('model_name', model.textContent); 
+        
+        // fetch response from Llama2/CLIP 
+        response = await fetch('fetch_chathistory', {
+            method:'POST',
+            body: formData,
+        });
+
+        // create response element 
+        const chat_data = await response.json(); 
+
+        // load chat history 
+        chatContainer.innerHTML = ""; 
+        console.log(model.textContent); 
+        if (model.textContent === "Llama 2") {
+            console.log("Loading Llama 2");
+            loadLlamaChatHistory(chat_data); 
+        } else if (model.textContent === "CLIP") {
+            console.log("Loading CLIP"); 
+            loadCLIPChatHistory(chat_data); 
+        } else if (model.textContent === "Code Llama") {
+            console.log("Loading Code Llama");
+            loadLlamaChatHistory(chat_data); 
+        }
+    }catch(error){
+        console.error('There was a error with fetching the chat history : ', error); 
+        return ''; 
+    }
 }
 
 function deleteChatHistory(chatId) {
     const deletedChatHistory = document.getElementById(`chat${chatId}`);
+
+    // delete from backend 
+    // remove the chats from local storage 
+    $.post('delete_chats', 
+    {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        chathistory_id: chatId, 
+        model_name: model.textContent
+    }, 
+    function(data) {
+        console.log("Successfully delete!"); 
+    });
+
     deletedChatHistory.style.transition = 'margin 0.5s';
-    deletedChatHistory.style.marginLeft = '-250px'; // Adjust this value based on the width of your sidebar
+    deletedChatHistory.style.marginLeft = '-250px'; // adjust this value based on the width of your sidebar
     setTimeout(() => {
-      deletedChatHistory.remove();
-    }, 500);
+        deletedChatHistory.remove(); 
+
+        // edge case: empty list 
+        chatHistoryContainer.querySelectorAll(".date-category").forEach(div => {
+            if (div.nextSibling === null || div.nextSibling.classList.contains("date-category")) {
+                div.remove();   
+            }
+        }); 
+    }, 500); 
+    
+    // check reloading 
+    if (deletedChatHistory.classList.contains("selected")) {
+        // reload empty chat container 
+        console.log(model.textContent); 
+        if (model.textContent === "Llama 2") {
+            loadLlamaChatHistory(null); 
+        } else if (model.textContent === "CLIP") {
+            loadCLIPChatHistory(null); 
+        } else if (model.textContent === "Code Llama") {
+            loadLlamaChatHistory(null); 
+        }
+    }
 }
 
 function toggleStar(chatId) {
+    const trashIcon = document.querySelector(`#chat${chatId} .fa-trash`);
     const starIcon = document.querySelector(`#chat${chatId} .fa-star`);
     starIcon.classList.toggle('fas');
-    starIcon.classList.toggle('far');
-    // Add your logic for handling star status here
+    starIcon.classList.toggle('far'); 
+
+    // update 
+    const starred = starIcon.classList.contains("far") ? "far" : "fas"; 
+    $.post('update_starred', 
+    {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        chathistory_id: chatId, 
+        starred: starred
+    }, 
+    function(data) {
+        console.log("Successfully update starred!"); 
+    });
 }
 
-// prevent background color change when clicking on icons
-document.querySelectorAll('.chathistory-item i').forEach(icon => {
-    icon.addEventListener('click', function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-    });
-});
+function showIcons(iconContainer) {
+    // display icons 
+    const trashIcon = iconContainer.querySelector(`.fa-trash`); 
+    const starIcon = iconContainer.querySelector(`.fa-star`); 
+    trashIcon.style.display = "inline-block"; 
+    starIcon.style.display = "inline-block"; 
+}
+
+function hideIcons(iconContainer) {
+    // hide icons 
+    const trashIcon = iconContainer.querySelector(`.fa-trash`); 
+    const starIcon = iconContainer.querySelector(`.fa-star`); 
+
+    // only display starred 
+    trashIcon.style.display = "none"; 
+    if (starIcon.classList.contains("far")) {
+        starIcon.style.display = "none"; 
+    }
+}
+
+function disableOnClick(element) {
+    // prevent background color change when clicking on icons
+    element.querySelectorAll("i").forEach(icon => {
+        icon.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+    }); 
+}
 
 // create new chat 
 function createNewChat() {
-    console.log("created"); 
+    // reload empty chat container 
+    console.log(model.textContent); 
+    if (model.textContent === "Llama 2") {
+        loadLlamaChatHistory(null); 
+    } else if (model.textContent === "CLIP") {
+        loadCLIPChatHistory(null); 
+    } else if (model.textContent === "Code Llama") {
+        loadLlamaChatHistory(null); 
+    }
+
+    // remove selected chat history 
+    const chatHistoryList = document.querySelectorAll('.chathistory-item');
+    chatHistoryList.forEach(history => {
+      history.classList.remove('selected');
+    });
 }
 
 newchatButton.addEventListener("click", createNewChat); 
 newchatMainButton.addEventListener("click", createNewChat); 
+
+function updateSideBarList(chat_data) {
+    var chatHistoryToday = document.getElementById("Today-chathistory"); 
+    var selectedChatHistory = document.getElementById(`chat${chat_data.chathistory_id}`); 
+
+    // edge case: init 
+    if (chatHistoryToday === null) {
+        // add date separator 
+        const dateDiv = document.createElement("div"); 
+        dateDiv.textContent = "Today"; 
+        dateDiv.className = "date-category"; 
+        dateDiv.classList.add("chathistory-item"); 
+        dateDiv.id = "Today-chathistory"; 
+        chatHistoryContainer.appendChild(dateDiv); 
+        chatHistoryToday = document.getElementById("Today-chathistory"); 
+    }
+
+    // check existence 
+    if (selectedChatHistory) {
+        // update (move to the top of the list) 
+        // chatHistoryContainer.removeChild(selectedChatHistory); 
+        // chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryToday.nextSibling); 
+        moveBlock(selectedChatHistory); 
+    } else {
+        // chat_data["starred"] = "far"; 
+        var chatHistoryDiv = createChatHistory(chat_data); 
+        chatHistoryContainer.insertBefore(chatHistoryDiv, chatHistoryToday.nextSibling); 
+        chatHistoryDiv.classList.add('selected'); 
+    }
+}
+
+function createChatHistory(chat_data) {
+    const chatHistoryDiv = document.createElement("div");
+    const prompt_html = `${chat_data.chathistory_title}
+                            <div class="icons">
+                            <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
+                            <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
+                            </div>` 
+    chatHistoryDiv.className = "chathistory-item"; 
+    chatHistoryDiv.setAttribute('onclick', `selectChatHistory('${chat_data.chathistory_id}')`);
+    chatHistoryDiv.id = `chat${chat_data.chathistory_id}`;  
+    chatHistoryDiv.innerHTML = prompt_html; 
+
+    // add functionalities 
+    disableOnClick(chatHistoryDiv); 
+
+    chatHistoryDiv.addEventListener('mouseover', () => {
+        showIcons(chatHistoryDiv);
+    });
+  
+    chatHistoryDiv.addEventListener('mouseout', () => {
+        hideIcons(chatHistoryDiv);
+    });
+    return chatHistoryDiv; 
+}
+
+// animation for updating side bar list 
+function moveBlock(selectedBlock) {
+    console.log("start func"); 
+    const blocks = Array.from(chatHistoryContainer.children);
+
+    const selectedBlockIndex = blocks.indexOf(selectedBlock);
+
+    blocks.forEach((currentBlock, index) => {
+        console.log("start animation"); 
+        if (index > 0 && index <= selectedBlockIndex) {
+            var translateYValue = `${currentBlock.offsetHeight}px`; 
+            if (index === selectedBlockIndex) {
+            translateYValue = `${-(index - 1) * currentBlock.offsetHeight}px`; 
+            }
+            currentBlock.style.transform = `translateY(${translateYValue})`; 
+            currentBlock.style.transition = `transform 0.5s ease-in-out, top 0.5s ease-in-out 0.05s`;
+            // currentBlock.style.transition = `transform 0.5s ease-in-out, top 0.5s ease-in-out 0.1s`;
+        }
+    });
+
+    // reset animation 
+    setTimeout(() => {
+        blocks.forEach((currentBlock, index) => {
+            if (index > 0 && index <= selectedBlockIndex) {
+                currentBlock.style.transition = 'none'; // Remove the transition temporarily
+                currentBlock.style.transform = '';
+            }
+        }); 
+        var chatHistoryToday = document.getElementById("Today-chathistory"); 
+        chatHistoryContainer.removeChild(selectedBlock); 
+        chatHistoryContainer.insertBefore(selectedBlock, chatHistoryToday.nextSibling); 
+
+    }, 500);
+}
 
 // // manage scroll bars 
 // document.addEventListener('DOMContentLoaded', function () {
@@ -166,6 +368,14 @@ newchatMainButton.addEventListener("click", createNewChat);
 // });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // // handle refreshing page 
+    // const navigationEntries = performance.getEntriesByType('navigation');
+    // const isPageRefreshed = navigationEntries.length > 0 && navigationEntries[0].type === 'reload';
+    // if (isPageRefreshed) {
+    //     console.log("yes"); 
+    //     return; 
+    // }
+
     // load theme 
     var theme; 
     $.get('get_theme', function(data) {
@@ -175,25 +385,42 @@ document.addEventListener('DOMContentLoaded', function() {
         themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
     });
 
-    // Retrieve the data_list from the Django template context
-    var chat = JSON.parse(document.getElementById('data').textContent); 
+    // retrieve the data_list from the Django template context
+    var chatHistories = JSON.parse(document.getElementById('data').textContent); 
 
-    // Get the <ul> element by its id
-    // var dataListElement = document.getElementById("dataList");
-
-    // load chat history 
+    // load chat history list in side bar window 
     console.log(model.textContent); 
+    loadChatHistoriesList(chatHistories); 
+
+    // reload empty chat container 
     if (model.textContent === "Llama 2") {
-        console.log("Loading Llama 2");
-        loadLlamaChatHistory(chat); 
+        loadLlamaChatHistory(null); 
     } else if (model.textContent === "CLIP") {
-        console.log("Loading CLIP"); 
-        loadCLIPChatHistory(chat); 
+        loadCLIPChatHistory(null); 
     } else if (model.textContent === "Code Llama") {
-        console.log("Loading Code Llama");
-        loadLlamaChatHistory(chat); 
+        loadLlamaChatHistory(null); 
     }
 });
+
+// load chat history list in side bar window 
+function loadChatHistoriesList(chatHistories) {
+    for (var category in chatHistories) {
+        if (chatHistories[category].length > 0) {
+            // add date separator 
+            const dateDiv = document.createElement("div"); 
+            dateDiv.textContent = category; 
+            dateDiv.className = "date-category"; 
+            dateDiv.classList.add("chathistory-item"); 
+            dateDiv.id = `${category.split(' ').join('')}-chathistory`; 
+            chatHistoryContainer.appendChild(dateDiv); 
+
+            // add chat histories within date 
+            chatHistories[category].forEach(function(item) {
+                chatHistoryContainer.appendChild(createChatHistory(item)); 
+            });
+        }
+    }
+}
 
 // load Llama 2/Code Llama chat history 
 function loadLlamaChatHistory(chat) {
@@ -331,10 +558,17 @@ const createChatElement = (content, className) => {
 const fetchResponse = async (incomingChatDiv) => {
     // handleOutgoingChat();  
     try{
-        // const loadDiv = document.getElementById('loadingDiv');
-        // loadDiv.style.display = 'block';
         const form = document.getElementById('form-query');
-        const formData = new FormData(form);
+        const formData = new FormData(form); 
+
+        // check init 
+        const selectedChatHistory = document.querySelector('.chat-history .selected'); 
+        if (selectedChatHistory != null) {
+            formData.append('chathistory_id', selectedChatHistory.id.substring(4));
+        } else {
+            formData.append('chathistory_id', 'empty'); 
+        }
+        formData.append('model_name', model.textContent); 
         
         // fetch response from Llama2/CLIP 
         var response; 
@@ -345,11 +579,14 @@ const fetchResponse = async (incomingChatDiv) => {
                 body: formData,
             });
 
-            // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
             const chat_data = await response.json();
+            console.log(chat_data.chathistory_id); 
             element.textContent = chat_data.query_response; 
+
+            // update side bar 
+            updateSideBarList(chat_data); 
         } else if (model.textContent === "Code Llama") {
             response = await fetch('fetch_code', {
                 method:'POST',
@@ -382,8 +619,8 @@ const fetchResponse = async (incomingChatDiv) => {
         form.reset();
     }catch(error){
         console.error('There was a error with fetching the response : ', error);
-        pElement.classList.add("error");
-        pElement.textContent = "Oops! Something went wrong while retrieving the response. Please try again.";
+        element.classList.add("error");
+        element.textContent = "Oops! Something went wrong while retrieving the response. Please try again.";
         return ''; 
     }
 
