@@ -114,6 +114,34 @@ def signup(request):
 
     return render(request, 'signup.html') 
 
+# fetch chat history data 
+@csrf_exempt
+def fetchChatHistory(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+
+    chatHistory = request.POST.get("chathistory_id")
+    model_name = request.POST.get("model_name") 
+
+    chathistory_id: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=chatHistory) 
+
+    # update session 
+    session["chathistory_id"] = chatHistory
+    session.save()
+    request.session["chathistory_id"] = chatHistory
+    print(request.session["chathistory_id"]) 
+
+    # retrieve data 
+    data = None
+    if (model_name == "Llama 2"): 
+        data = UserQueries.objects.filter(chathistory_id=chathistory_id).values('question_text', 'query_response')
+    elif (model_name == "Code Llama"): 
+        data = CodeQueries.objects.filter(chathistory_id=chathistory_id).values('question_text', 'query_response')
+    else: 
+        data = ImageQueries.objects.filter(chathistory_id=chathistory_id).values('question_text', 'image', 'image_response') 
+    data = list(data.values())
+    return JsonResponse(data, safe=False) 
+
 # # generate unique id for chat history 
 # def generate_unique_id(model_name): 
 #     check = False; 

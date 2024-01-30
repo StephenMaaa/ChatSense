@@ -11,6 +11,7 @@ urlpatterns = [
     path('fetch_response', llama_views.fetchResponse, name='fetch_response'), 
     path('fetch_image', cilp_views.fetchImage, name='fetch_image'), 
     path('fetch_code', codellama_views.fetchCode, name='fetch_code'), 
+    path('fetch_chathistory', main_views.fetchChatHistory, name='fetch_chathistory'), 
     path('update_theme', main_views.updateTheme, name='update_theme'),
     path('get_theme', main_views.getTheme, name='get_theme'),
     path('delete_chats', main_views.deleteChats, name='delete_chats'),
