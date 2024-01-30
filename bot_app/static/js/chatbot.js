@@ -189,8 +189,18 @@ function deleteChatHistory(chatId) {
 function toggleStar(chatId) {
     const starIcon = document.querySelector(`#chat${chatId} .fa-star`);
     starIcon.classList.toggle('fas');
-    starIcon.classList.toggle('far');
-    // Add your logic for handling star status here
+    starIcon.classList.toggle('far'); 
+
+    // update 
+    $.post('update_starred', 
+    {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        chathistory_id: chatId, 
+        starred: starIcon.classList.contains("fas") 
+    }, 
+    function(data) {
+        console.log("Successfully update starred!"); 
+    });
 }
 
 function disableOnClick(element) {
@@ -251,7 +261,7 @@ function updateSideBarList(chat_data) {
 
 function createChatHistory(chat_data) {
     const chatHistoryDiv = document.createElement("div");
-    const prompt_html = `${chat_data.question_text}
+    const prompt_html = `${chat_data.chathistory_title}
                             <div class="icons">
                             <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
                             <i class="star far fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>

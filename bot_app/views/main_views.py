@@ -142,6 +142,19 @@ def fetchChatHistory(request):
     data = list(data.values())
     return JsonResponse(data, safe=False) 
 
+# update starred status of chat history data 
+@csrf_exempt
+def updateStarred(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+
+    chatHistory = request.POST.get("chathistory_id")
+    starred = request.POST.get("starred") 
+    print(starred)
+
+    ChatHistories.objects.get(user_id=user, chathistory_id=chatHistory).chathistory_title = starred 
+    return JsonResponse({'success': True}) 
+
 # # generate unique id for chat history 
 # def generate_unique_id(model_name): 
 #     check = False; 

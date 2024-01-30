@@ -44,11 +44,14 @@ def llamaHomepage(request):
 # def loadChatHistory(request): 
 
 # create new chat 
-def create(request, model_name): 
+def create(request, query, model_name): 
     username = request.session["username"]
     user = User.objects.get(name=username)
     unique_id = generate_unique_id(request, model_name) 
-    queries = ChatHistories(user_id=user, chathistory_id=unique_id) 
+
+    # process chat history title 
+    chathistory_title = process_sentence(query.cleaned_data["query"], 20) 
+    queries = ChatHistories(user_id=user, chathistory_id=unique_id, chathistory_title=chathistory_title)  
     queries.save()              # saves the query and response into database. 
     # session.chathistory_id = unique_id
     session["chathistory_id"] = unique_id
@@ -59,31 +62,50 @@ def create(request, model_name):
     # }
     return request, unique_id
 
+def process_sentence(sentence, max_length=20):
+    words = sentence.split()
+    processed_words = []
+    current_length = 0
+
+    for word in words:
+        if current_length + len(word) <= max_length:
+            processed_words.append(word)
+            current_length += len(word) + 1 
+        else:
+            break
+
+    processed_sentence = ' '.join(processed_words)
+
+    # check trailing space 
+    if (current_length < len(sentence)): 
+        processed_sentence += " ..." 
+    return processed_sentence 
 
 # Whenever user clicks requests for a response, the server will send a prompt to the LLM model. And return the response to the html page.
 @csrf_exempt
 def fetchResponse(request): 
     print(request.method)
     print(request)
-    # check status (get chathistory id) 
-    chatHistory = request.POST.get("chathistory_id")
-    model_name = request.POST.get("model_name")
-    print(chatHistory)
-    if (chatHistory == "empty"): 
-        request, chatHistory = create(request, model_name)
-    # print(chatHistory)
-        
-    # update session 
-    session["chathistory_id"] = chatHistory
-    session.save()
-    request.session["chathistory_id"] = chatHistory
-    print(request.session["chathistory_id"])
 
     
     if request.method == "POST":
-        query = QueryForm(request.POST)
-        print(query)
+        query = QueryForm(request.POST) 
+
         if query.is_valid():
+            # check status (get chathistory id) 
+            chatHistory = request.POST.get("chathistory_id")
+            model_name = request.POST.get("model_name")
+            print(chatHistory)
+            if (chatHistory == "empty"): 
+                request, chatHistory = create(request, query, model_name)
+            # print(chatHistory)
+                
+            # update session 
+            session["chathistory_id"] = chatHistory
+            session.save()
+            request.session["chathistory_id"] = chatHistory
+            print(request.session["chathistory_id"])
+
             result = HttpResponse(waitForResult(func=fetchResponseFromModel, request=request, query=query), content_type='application/json') 
             print(result)
             # return HttpResponse(waitForResult(request=request, query=query), content_type='application/json')  
@@ -123,7 +145,8 @@ def fetchResponseFromModel(request, query):
     query_resp = {
         'question_text':queries.question_text,
         'query_response':response, 
-        'chathistory_id':request.session["chathistory_id"]
+        'chathistory_id':request.session["chathistory_id"], 
+        'chathistory_title':chathistory_id.chathistory_title
     }
     print("id: " + request.session["chathistory_id"])
     return JsonResponse(query_resp)
