@@ -47,8 +47,8 @@ def llamaHomepage(request):
         if items:
             print(f"{category}:")
             for item in items:
-                print(item)  
-    return render(request, 'index.html', {'data': data}) 
+                print(item) 
+    return render(request, 'index.html', {'data': data, 'username': username}) 
 
 @csrf_exempt
 def updateTheme(request):

@@ -7,6 +7,7 @@ const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 const newchatButton = document.querySelector(".newchat-btn");
 const newchatMainButton = document.querySelector("#newchat-main-btn");
+const userButton = document.querySelector(".user-btn"); 
 const model = document.querySelector(".dropdown-header");
 let userText = null;
 
@@ -348,6 +349,18 @@ function moveBlock(selectedBlock) {
     }, 500);
 }
 
+// navigation - user settings 
+function toggleNavigation() {
+    // toggle selection 
+    if (userButton.classList.contains("user-selected")) {
+        userButton.classList.remove("user-selected"); 
+    } else {
+        userButton.classList.add("user-selected"); 
+    }
+    var navigationList = document.getElementById('navigationList');
+    navigationList.style.display = (navigationList.style.display === 'block') ? 'none' : 'block'; 
+}
+
 // // manage scroll bars 
 // document.addEventListener('DOMContentLoaded', function () {
 //     const sidebar = document.getElementById('sidebar');
@@ -383,10 +396,17 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Current Theme:', theme); 
         document.body.classList.toggle("light-mode", theme === "light_mode");
         themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
-    });
+    }); 
+
 
     // retrieve the data_list from the Django template context
     var chatHistories = JSON.parse(document.getElementById('data').textContent); 
+    var user = JSON.parse(document.getElementById('username').textContent); 
+
+    // load user name 
+    const usernameDiv = document.querySelector(".user"); 
+    usernameDiv.textContent = user; 
+    console.log(user); 
 
     // load chat history list in side bar window 
     console.log(model.textContent); 

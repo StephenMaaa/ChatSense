@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     {{ data|json_script:"data" }}
+    {{ username|json_script:"username" }}
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
   <body>
@@ -23,7 +24,7 @@
           <div class="dropdown-item" onclick="selectModel('clip')">CLIP</div>
         </div>
       </div>
-      <span id="logout-btn" class="material-symbols-rounded">logout</span>
+      <!-- <span id="logout-btn" class="material-symbols-rounded">logout</span> -->
     </header>
 
     <!-- Open button with icon to toggle sidebar -->
@@ -50,6 +51,21 @@
             <i class="star far fa-star" onclick="toggleStar(2)"></i>
           </div>
         </div> -->
+      </div>
+      <div class="user-btn" onclick="toggleNavigation()">
+        <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+        <div class="user"></div>
+        <div class="navigation-list" id="navigationList">
+          <nav>
+            <a href="#">
+              <span id="newchat-icon" class="material-symbols-rounded .user-icons">settings</span>
+              Settings</a>
+            <a href="#" id="logout-btn">
+              <span class="material-symbols-rounded .user-icons">logout</span>
+              Logout</a>
+            <!-- Add more items as needed -->
+          </nav>
+        </div>
       </div>
     </div>
 
