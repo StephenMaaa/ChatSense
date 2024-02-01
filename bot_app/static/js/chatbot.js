@@ -89,6 +89,9 @@ function toggleSidebar() {
     // close user settings 
     var navigationList = document.getElementById('navigationList');
     navigationList.style.display = 'none'; 
+    if (userButton.classList.contains("user-selected")) {
+        userButton.classList.remove("user-selected"); 
+    }
 }
 
 function showChat(chatId) {
