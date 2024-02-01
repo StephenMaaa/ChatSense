@@ -85,20 +85,24 @@ function toggleSidebar() {
         element.style.marginLeft = '-15%';
       });
     }
+
+    // close user settings 
+    var navigationList = document.getElementById('navigationList');
+    navigationList.style.display = 'none'; 
 }
 
 function showChat(chatId) {
     // hide all chat history
     document.querySelectorAll('.chat-history').forEach((chat) => {
       chat.style.display = 'none';
-});
+    });
 
-// show the selected chat history
-const selectedChat = document.getElementById(`chat${chatId}`);
-    if (selectedChat) {
-      selectedChat.style.display = 'block';
+    // show the selected chat history
+    const selectedChat = document.getElementById(`chat${chatId}`);
+        if (selectedChat) {
+        selectedChat.style.display = 'block';
+        }
     }
-}
 
 // chathistory item features 
 async function selectChatHistory(chatId) {
@@ -271,7 +275,7 @@ function updateSideBarList(chat_data) {
         dateDiv.className = "date-category"; 
         dateDiv.classList.add("chathistory-item"); 
         dateDiv.id = "Today-chathistory"; 
-        chatHistoryContainer.appendChild(dateDiv); 
+        chatHistoryContainer.insertBefore(dateDiv, chatHistoryContainer.firstChild); 
         chatHistoryToday = document.getElementById("Today-chathistory"); 
     }
 
@@ -359,6 +363,36 @@ function toggleNavigation() {
     }
     var navigationList = document.getElementById('navigationList');
     navigationList.style.display = (navigationList.style.display === 'block') ? 'none' : 'block'; 
+}
+
+// user settings 
+function openSettings() {
+    console.log("open settings"); 
+    var settings = document.querySelector(".outer-modal");
+    var settingsWrapper = document.querySelector(".modal-wrapper");
+    var gridModal = document.querySelector(".grid-modal"); 
+    var settingsModal = document.querySelector(".settings-modal"); 
+    settings.style.display = 'block'; 
+    settingsWrapper.style.display = 'block'; 
+    gridModal.style.display = 'grid';
+    settingsModal.style.display = 'block';
+}
+
+function closeSettings() {
+    var settings = document.querySelector(".outer-modal");
+    var settingsModal = document.querySelector(".grid-modal"); 
+    settings.style.display = 'none'; 
+    settingsModal.style.display = 'none';
+}
+
+// toggle settings selector 
+function selectSettings(selectedSettings) {
+    const settingsList = document.querySelectorAll('.selector-item');
+    settingsList.forEach(settings => {
+      settings.classList.remove('settings-selected');
+    });
+
+    selectedSettings.classList.add('settings-selected'); 
 }
 
 // // manage scroll bars 
