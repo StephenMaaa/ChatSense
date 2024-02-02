@@ -83,7 +83,7 @@
             </div>
         </form>
         <div class="typing-controls">
-          <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
+          <!-- <span id="theme-main-btn" class="material-symbols-rounded">light_mode</span> -->
           <span id="delete-btn" class="material-symbols-rounded">delete</span>
           <!-- <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span> -->
       </div>
@@ -117,14 +117,15 @@
                     <div class="settings-item">
                       <div class="inner-settings-item">
                         <div>Theme</div>
-                        <button><span>Dark</span></button>
+                        <!-- <button><span>Dark</span></button> -->
+                        <div class="theme-toggle active" id="theme-btn" data-info="dark_mode"></div>
                       </div>
                     </div>
                     <div class="settings-item">
                       <div class="inner-settings-item">
                         <div>Delete all chats</div>
                         <button class="delete-settings-btn">
-                          <div class="inner-delete-settings">Delete all</div>
+                          <div class="inner-delete-settings" id="delete-all-btn">Delete all</div>
                         </button>
                       </div>
                     </div>

@@ -3,8 +3,10 @@ const logoutButton = document.querySelector("#logout-btn");
 const sendButton = document.querySelector("#queryBtn");
 const chatContainer = document.querySelector(".chat-container");
 const chatHistoryContainer = document.querySelector(".chat-history");
+// const themeButton = document.querySelector("#theme-main-btn");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
+const deleteAllButton = document.querySelector("#delete-all-btn");
 const newchatButton = document.querySelector(".newchat-btn");
 const newchatMainButton = document.querySelector("#newchat-main-btn");
 const userButton = document.querySelector(".user-btn"); 
@@ -102,10 +104,10 @@ function showChat(chatId) {
 
     // show the selected chat history
     const selectedChat = document.getElementById(`chat${chatId}`);
-        if (selectedChat) {
+    if (selectedChat) {
         selectedChat.style.display = 'block';
-        }
     }
+}
 
 // chathistory item features 
 async function selectChatHistory(chatId) {
@@ -398,24 +400,20 @@ function selectSettings(selectedSettings) {
     selectedSettings.classList.add('settings-selected'); 
 }
 
-// // manage scroll bars 
-// document.addEventListener('DOMContentLoaded', function () {
-//     const sidebar = document.getElementById('sidebar');
-
-//     document.addEventListener('mousemove', function (event) {
-//       const x = event.clientX;
-
-//       if (x < sidebar.offsetWidth) {
-//         // Cursor is in the sidebar
-//         sidebar.style.overflowY = 'hidden';
-//         document.style.overflowY = 'hidden';
-//       } else {
-//         // Cursor is in the main content
-//         sidebar.style.overflowY = 'hidden';
-//         document.style.overflowY = 'hidden';
-//       }
-//     });
-// });
+// theme button 
+themeButton.addEventListener('click', () => {
+    console.log("change theme"); 
+    themeButton.classList.toggle('active'); 
+    document.body.classList.toggle("light-mode"); 
+    updateTheme(themeButton.getAttribute("data-info")); 
+    
+    // update theme mode 
+    if (document.body.classList.contains("light-mode")) {
+        themeButton.setAttribute("data-info", "light_mode"); 
+    } else {
+        themeButton.setAttribute("data-info", "dark_mode"); 
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     // // handle refreshing page 
@@ -431,8 +429,15 @@ document.addEventListener('DOMContentLoaded', function() {
     $.get('get_theme', function(data) {
         theme = data.theme;
         console.log('Current Theme:', theme); 
-        document.body.classList.toggle("light-mode", theme === "light_mode");
-        themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
+        themeButton.classList.toggle('active', theme === "light_mode"); 
+        document.body.classList.toggle("light-mode", theme === "dark_mode"); 
+        
+        // update theme mode 
+        if (document.body.classList.contains("light-mode")) {
+            themeButton.setAttribute("data-info", "light_mode"); 
+        } else {
+            themeButton.setAttribute("data-info", "dark_mode"); 
+        }
     }); 
 
 
@@ -782,12 +787,9 @@ deleteButton.addEventListener("click", () => {
     });
 });
 
-themeButton.addEventListener("click", () => {
-    // toggle the theme mode and save the updated theme to the local storage 
-    document.body.classList.toggle("light-mode"); 
-    updateTheme(themeButton.innerText); 
-    themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
-    // updateTheme(themeButton.innerText); 
+deleteAllButton.addEventListener("click", () => {
+    // remove the chats from local storage 
+    console.log("delete all"); 
 });
 
 function updateTheme(theme) {

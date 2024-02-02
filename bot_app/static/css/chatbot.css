@@ -650,6 +650,128 @@ i.fa-trash {
   background-color: var(--settings-selected-color); 
 }
 
+.theme-toggle {
+  border-radius: 9999px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 32px;
+  height: 20px;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  pointer-events: auto;
+}
+
+
+/* theme button styles */
+.theme-toggle {
+  position: relative;
+  /* margin: auto; */
+  width: 66px;
+  height: 27px;
+  background: 
+          radial-gradient(circle at 18% 6px, #fff, #fff 1.8px, transparent 2.1px, transparent),
+          radial-gradient(circle at 35% 13.5px, #fff, #fff 0.3px, transparent 0.6px, transparent),
+          radial-gradient(circle at 10% 21px, #fff, #fff 0.75px, transparent 1.05px, transparent),
+          radial-gradient(circle at 25% 4.5px, #fff, #fff 0.9px, transparent 1.2px, transparent),
+          radial-gradient(circle at 15% 15px, #fff, #fff 0.45px, transparent 0.75px, transparent),
+          radial-gradient(circle at 30% 22.5px, #fff, #fff 1.5px, transparent 1.8px, transparent),
+          radial-gradient(circle at 5% 9px, #fff, #fff 0.15px, transparent 0.45px, transparent),
+          radial-gradient(circle at 25% 18px, #fff, #fff 0.15px, transparent 1.95px, transparent),
+          radial-gradient(circle at 7% 10.5px, #fff, #fff 0.15px, transparent 0.45px, transparent),
+          linear-gradient(90deg, #2b303e, #2b303e 50%, #5a81b4 50%, #5a81b4);
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  border-radius: 27px;
+  box-shadow: 
+      0 -0.9px 1.2px #999,
+      inset 0 0.9px 1.5px #333,
+      0 1.2px 1.2px #ffe,
+      inset 0 -0.9px 1.5px #ddd;
+  cursor: pointer;
+  overflow: hidden;
+  transition: .5s all;
+
+  &::before,
+  &::after {
+      content: "";
+      position: absolute;
+      transition: .5s all;
+  }
+  &::before {
+      width: 22.5px;
+      height: 22.5px;
+      border-radius: 50%;
+      background: #e9cb50;
+      inset: 2.25px;
+      box-shadow: 
+          0 0 1.5px #333,
+          inset 0.6px 0.6px 0.9px #f8f4e4,
+          inset -0.6px -0.6px 0.9px #665613;
+      z-index: 1;
+  }
+  &::after {
+      width: 21px;
+      height: 21px;
+      inset: 3px;
+      border-radius: 50%;
+      box-shadow: 
+          3px 19.5px 0 3px #fff,
+          19.5px 18px 0 1.5px #fff,
+          28.5px 21px 0 3px #fff,
+          40.5px 13.5px 0 1.5px #fff,
+          51px 10.5px 0 3px #fff,
+          58.5px -1.5px 0 3px #fff,
+          -3px 0 0 15px rgba(255, 255, 255, .2),
+          4.5px 0 0 15px rgba(255, 255, 255, .15),
+          12px 0 0 15px rgba(255, 255, 255, .21),
+          3px 12px 0 3px #abc1d9,
+          21px 10.5px 0 3px #abc1d9,
+          28.5px 12px 0 3px #abc1d9,
+          40.5px 6px 0 3px #abc1d9,
+          46.5px 4.5px 0 3px #abc1d9,
+          57px -6px 0 3px #abc1d9;
+    }
+  }
+
+  .theme-toggle:hover::before {
+    filter: contrast(90%) brightness(110%);
+    scale: 1.05;
+  }
+
+  .theme-toggle.active {
+  background-position: 0 0;
+  
+  &::before {
+      translate: 39px;
+      background: 
+          radial-gradient(circle at 50% 6px, #939aa5, #939aa5 1.95px, transparent 2.1px, transparent),
+          radial-gradient(circle at 35% 13.5px, #939aa5, #939aa5 3.45px, transparent 3.6px, transparent),
+          radial-gradient(circle at 72% 15px, #939aa5, #939aa5 2.55px, transparent 2.7px, transparent),
+          radial-gradient(#cbcdda, #cbcdda);
+  }
+  &::after {
+      transform: translate(39px);
+      box-shadow: 
+          3px 19.5px 0 3px transparent,
+          19.5px 18px 0 1.5px transparent,
+          28.5px 21px 0 3px transparent,
+          40.5px 13.5px 0 1.5px transparent,
+          51px 10.5px 0 3px transparent,
+          58.5px -1.5px 0 3px transparent,
+          3px 0 0 15px rgba(255, 255, 255, .2),
+          -4.5px 0 0 15px rgba(255, 255, 255, .15),
+          -12px 0 0 15px rgba(255, 255, 255, .21),
+          3px 12px 0 3px transparent,
+          21px 10.5px 0 3px transparent,
+          28.5px 12px 0 3px transparent,
+          40.5px 6px 0 3px transparent,
+          46.5px 4.5px 0 3px transparent,
+          57px -6px 0 3px transparent;
+    }
+  }
+
  /* scroll bar styles */
 ::-webkit-scrollbar {
   height: 1rem;
