@@ -203,6 +203,28 @@ def categorize_dates(data):
 
     return categorized_data 
 
+@csrf_exempt
+def uploadProfile(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    
+    # load image 
+    if request.method == 'POST' and request.FILES.get('image'):
+        profile_image = request.FILES['image']
+        user.profile = profile_image
+        user.save() 
+    
+    print(profile_image)
+    print(user.profile.url)
+    return JsonResponse({'success': True}) 
+
+@csrf_exempt
+def getProfile(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    profile_image = user.profile.url if user.profile else "" 
+    return JsonResponse({'profile_image': profile_image}) 
+
 # # generate unique id for chat history 
 # def generate_unique_id(model_name): 
 #     check = False; 

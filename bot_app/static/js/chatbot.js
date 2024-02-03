@@ -10,6 +10,7 @@ const deleteAllButton = document.querySelector("#delete-all-btn");
 const newchatButton = document.querySelector(".newchat-btn");
 const newchatMainButton = document.querySelector("#newchat-main-btn");
 const userButton = document.querySelector(".user-btn"); 
+const profileUploadButton = document.querySelector(".profile-button"); 
 const model = document.querySelector(".dropdown-header");
 let userText = null;
 
@@ -291,7 +292,6 @@ function updateSideBarList(chat_data) {
         // chatHistoryContainer.insertBefore(selectedChatHistory, chatHistoryToday.nextSibling); 
         moveBlock(selectedChatHistory); 
     } else {
-        // chat_data["starred"] = "far"; 
         var chatHistoryDiv = createChatHistory(chat_data); 
         chatHistoryContainer.insertBefore(chatHistoryDiv, chatHistoryToday.nextSibling); 
         chatHistoryDiv.classList.add('selected'); 
@@ -355,7 +355,13 @@ function moveBlock(selectedBlock) {
         chatHistoryContainer.removeChild(selectedBlock); 
         chatHistoryContainer.insertBefore(selectedBlock, chatHistoryToday.nextSibling); 
 
-    }, 500);
+        // edge case: empty list 
+        chatHistoryContainer.querySelectorAll(".date-category").forEach(div => {
+            if (div.nextSibling === null || div.nextSibling.classList.contains("date-category")) {
+                div.remove();   
+            }
+        }); 
+    }, 500); 
 }
 
 // navigation - user settings 
@@ -398,6 +404,10 @@ function selectSettings(selectedSettings) {
     });
 
     selectedSettings.classList.add('settings-selected'); 
+
+    // display 
+    var generalSection = document.getElementById(selectedSettings.dataset.info); 
+    showSection(generalSection); 
 }
 
 // theme button 
@@ -415,16 +425,74 @@ themeButton.addEventListener('click', () => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // // handle refreshing page 
-    // const navigationEntries = performance.getEntriesByType('navigation');
-    // const isPageRefreshed = navigationEntries.length > 0 && navigationEntries[0].type === 'reload';
-    // if (isPageRefreshed) {
-    //     console.log("yes"); 
-    //     return; 
-    // }
+// toggle settings selection 
+function showSection(selectedSection) {
+    console.log(selectedSection); 
 
-    // load theme 
+    // hide all sections
+    var sections = document.querySelectorAll('.main-settings');
+    sections.forEach(function(section) {
+        section.classList.remove('selected-section');
+    });
+
+    // show the selected section
+    selectedSection.classList.add('selected-section'); 
+}
+
+// trigger profile uploading 
+function triggerUploadProfile() {
+    console.log("here"); 
+    document.getElementById('profile-input').click(); 
+}
+
+function uploadProfile() {
+    var imageInput = document.getElementById('profile-input');
+    var profile_image = document.querySelector('.profile-image'); 
+
+    console.log(imageInput.files[0]); 
+
+    if (imageInput.files && imageInput.files[0]) {
+        var reader = new FileReader();
+  
+        reader.onload = function(e) {
+            profile_image.src = e.target.result;
+  
+            // Send the file data to the Django backend using jQuery $.post
+            var formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+            console.log(imageInput.files[0]); 
+
+            // $.post('upload_profile', { profile: formData }, function(data) {
+            //     if (data.success) {
+            //         console.log('Profile updated successfully');
+            //         // You can perform additional actions upon successful update
+            //     } else {
+            //         console.error('Failed to update profile');
+            //     }
+            // });
+            $.ajax({
+                url: 'upload_profile', // Adjust the URL as needed
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log('Image uploaded and database updated successfully');
+                    loadProfile(); 
+                },
+                error: function() {
+                    console.error('Error uploading image');
+                }
+            });
+        };
+    };
+
+    // load profile 
+    reader.readAsDataURL(imageInput.files[0]); 
+}
+
+// load theme 
+function loadTheme() {
     var theme; 
     $.get('get_theme', function(data) {
         theme = data.theme;
@@ -439,6 +507,38 @@ document.addEventListener('DOMContentLoaded', function() {
             themeButton.setAttribute("data-info", "dark_mode"); 
         }
     }); 
+}
+
+// load profile 
+function loadProfile() {
+    var profile_image;  
+    $.get('get_profile', function(data) {
+        profile_image = data.profile_image; 
+        console.log('Current Profile:', profile_image); 
+        
+        // set profiles 
+        var userButtonImage = document.getElementById("chat-profile"); 
+        userButtonImage.src = profile_image; 
+
+        var profileImage = document.querySelector(".profile-image"); 
+        profileImage.src = profile_image; 
+    }); 
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // // handle refreshing page 
+    // const navigationEntries = performance.getEntriesByType('navigation');
+    // const isPageRefreshed = navigationEntries.length > 0 && navigationEntries[0].type === 'reload';
+    // if (isPageRefreshed) {
+    //     console.log("yes"); 
+    //     return; 
+    // }
+
+    // load theme 
+    loadTheme(); 
+
+    // load profile 
+    loadProfile(); 
 
 
     // retrieve the data_list from the Django template context
@@ -847,3 +947,6 @@ function closeModal() {
     // hide the modal
     document.getElementById('myModal').style.display = 'none';
 }
+
+var generalButton = document.querySelector('[data-info="general"]'); 
+selectSettings(generalButton); 

@@ -101,23 +101,22 @@
               <span class="material-symbols-rounded close-btn" onclick="closeSettings()">close</span>
             </div>
             <div>
-              <div data-orientation="vertical" class="settings-content">
+              <div data-orientation="vertical" class="settings-content general-settings">
                 <div data-orientation="vertical" class="settings-selector">
-                  <div class="selector-item" onclick="selectSettings(this)">
+                  <div class="selector-item" onclick="selectSettings(this)" data-info="general">
                     <span class="material-symbols-rounded settings-icons">settings</span>
                     <div class="inner-selector">General</div>
                   </div>
-                  <div class="selector-item" onclick="selectSettings(this)">
+                  <div class="selector-item" onclick="selectSettings(this)" data-info="profile">
                     <span class="material-symbols-rounded settings-icons">account_circle</span>
                     <div class="inner-selector">Profile</div>
                   </div>
                 </div>
-                <div data-orientation="vertical" class="main-settings">
+                <div data-orientation="vertical" class="main-settings" id="general">
                   <div class="settings-list">
                     <div class="settings-item">
                       <div class="inner-settings-item">
                         <div>Theme</div>
-                        <!-- <button><span>Dark</span></button> -->
                         <div class="theme-toggle active" id="theme-btn" data-info="dark_mode"></div>
                       </div>
                     </div>
@@ -128,6 +127,17 @@
                           <div class="inner-delete-settings" id="delete-all-btn">Delete all</div>
                         </button>
                       </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div data-orientation="vertical" class="main-settings" id="profile">
+                  <div class="profile-container">
+                    <input type="file" name="profile-picture" accept="image/*" id="profile-input" onchange="uploadProfile()">
+                    <div class="profile">
+                      <img src="static/images/user.jpg" class="profile-image" onclick="triggerUploadProfile()">
+                      <!-- <input type="file" name="profile-picture" accept="image/*" id="profile-input"> -->
+                      <!-- <button type="submit" class="profile-button" onclick="print()"></button> -->
                     </div>
                   </div>
                 </div>

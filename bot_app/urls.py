@@ -15,5 +15,7 @@ urlpatterns = [
     path('update_theme', main_views.updateTheme, name='update_theme'),
     path('get_theme', main_views.getTheme, name='get_theme'),
     path('delete_chats', main_views.deleteChats, name='delete_chats'),
-    path('update_starred', main_views.updateStarred, name='update_starred')
+    path('update_starred', main_views.updateStarred, name='update_starred'), 
+    path('upload_profile', main_views.uploadProfile, name='upload_profile'), 
+    path('get_profile', main_views.getProfile, name='get_profile') 
 ]
