@@ -223,7 +223,23 @@ def getProfile(request):
     username = request.session["username"]
     user = User.objects.get(name=username)
     profile_image = user.profile.url if user.profile else "" 
-    return JsonResponse({'profile_image': profile_image}) 
+    return JsonResponse({'username': user.name, 'profile_image': profile_image}) 
+
+# update username 
+@csrf_exempt
+def updateUsername(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+
+    # update 
+    newUsername = request.POST.get("username") 
+    user.name = newUsername 
+    user.save() 
+
+    session["username"] = newUsername 
+    session.save() 
+    request.session["username"] = newUsername 
+    return JsonResponse({'success': True}) 
 
 # # generate unique id for chat history 
 # def generate_unique_id(model_name): 

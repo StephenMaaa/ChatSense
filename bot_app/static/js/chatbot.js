@@ -445,6 +445,51 @@ function triggerUploadProfile() {
     document.getElementById('profile-input').click(); 
 }
 
+// change username 
+function toggleEdit() {
+    const username = document.querySelector(".username");
+    const editButton = document.getElementById('edit-username-btn');
+    const doneButton = document.getElementById('done-username-btn'); 
+    const inputField = document.getElementById('changeUsername');
+
+    doneButton.style.display = 'flex';
+    inputField.style.display = 'inline-block';
+    username.style.display = 'none';
+    editButton.style.display = 'none'; 
+
+    // pre-fill value 
+    inputField.value = username.innerText; 
+}
+
+// update username 
+function updateUsername() {
+    const username = document.querySelector(".username");
+    const editButton = document.getElementById('edit-username-btn');
+    const doneButton = document.getElementById('done-username-btn'); 
+    const inputField = document.getElementById('changeUsername'); 
+    const usernameDiv = document.querySelector(".user"); 
+
+    // update username 
+    username.innerText = inputField.value; 
+    usernameDiv.innerText = inputField.value; 
+
+    // Hide edit mode
+    doneButton.style.display = 'none';
+    inputField.style.display = 'none';
+    username.style.display = 'inline-block';
+    editButton.style.display = 'flex'; 
+
+    // update 
+    $.post('update_username', { username: inputField.value }, function(data) {
+        if (data.success) {
+            console.log('Username updated successfully');
+            // You can perform additional actions upon successful update
+        } else {
+            console.error('Failed to update username');
+        }
+    });
+}
+
 function uploadProfile() {
     var imageInput = document.getElementById('profile-input');
     var profile_image = document.querySelector('.profile-image'); 
@@ -548,6 +593,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // load user name 
     const usernameDiv = document.querySelector(".user"); 
     usernameDiv.textContent = user; 
+    const usernameProfile = document.querySelector(".username"); 
+    usernameProfile.textContent = user; 
     console.log(user); 
 
     // load chat history list in side bar window 

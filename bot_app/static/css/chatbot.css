@@ -851,6 +851,51 @@ i.fa-trash {
   /* opacity: 0;  */
 }
 
+.username-container {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.username-box {
+  display: flex;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.username {
+  text-align: center;
+  color: var(--text-color); 
+  margin-right: 0.5rem; 
+}
+
+#changeUsername {
+  /* text-align: center; */
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  padding-left: 0.375rem;
+  padding-right: 0.375rem;
+  color: var(--text-color); 
+  background-color: var(--model-background-color);
+  border-color: var(--border-light); 
+  border-width: 1px;
+  border-radius: 0.5rem; 
+  display: block;
+  padding-block: 1px;
+  padding-inline: 2px;
+}
+
+#edit-username-btn, #done-username-btn {
+  display: flex; 
+  align-items: center; 
+  color: var(--close-btn-color); 
+}
+
+#changeUsername, #done-username-btn {
+  display: none;
+}
+
  /* scroll bar styles */
 ::-webkit-scrollbar {
   height: 1rem;
