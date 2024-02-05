@@ -99,6 +99,7 @@ def fetchResponse(request):
             # print(chatHistory)
                 
             # update session 
+            chatHistory = chatHistory if type(chatHistory) == str else chatHistory.chathistory_id 
             session["chathistory_id"] = chatHistory
             session.save()
             request.session["chathistory_id"] = chatHistory

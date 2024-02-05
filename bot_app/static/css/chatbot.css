@@ -247,6 +247,11 @@ header {
   user-select: none;
 }
 
+.chathistory-image-item {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 /* chathistory item icons */
 .chathistory-item .icons {
   display: flex;
@@ -995,7 +1000,7 @@ span.material-symbols-rounded {
   align-items: center;
 }
 
-.chat .chat-details #chat-profile, #user-profile {
+.chat .chat-details #chat-profile, .chathistory-item #chat-profile, #user-profile {
   width: 35px;
   height: 35px;
   align-self: flex-start;
@@ -1116,7 +1121,7 @@ span.material-symbols-rounded {
   display: none;
 }
 
-.typing-textarea button {
+#queryBtn {
   width: 55px;
   height: 55px;
   display: flex;
@@ -1134,14 +1139,14 @@ input#query-box.chat-input {
   width: 826px; 
 }
 
-.typing-textarea button {
+#queryBtn {
   position: absolute;
   right: 0;
   bottom: 0;
   visibility: hidden;
 }
 
-.typing-textarea input:valid ~ button {
+.typing-textarea input:valid ~ #queryBtn {
   visibility: visible;
 }
 

@@ -299,13 +299,28 @@ function updateSideBarList(chat_data) {
 }
 
 function createChatHistory(chat_data) {
-    const chatHistoryDiv = document.createElement("div");
-    const prompt_html = `${chat_data.chathistory_title}
-                            <div class="icons">
-                                <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
-                                <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
-                            </div>` 
-    chatHistoryDiv.className = "chathistory-item"; 
+    const chatHistoryDiv = document.createElement("div"); 
+    const image_title = "[IMAGE_TITLE]"; 
+
+    // handle image title for CLIP 
+    var prompt_html; 
+    // console.log(chat_data.question_text.length); 
+    console.log(typeof chat_data.chathistory_title); 
+    if (model.textContent === "CLIP" && chat_data.chathistory_title.startsWith(image_title)) {
+        prompt_html = `<img src="${chat_data.chathistory_title.substring(image_title.length)}" id="chat-profile" alt="input-img"></img>
+                        <div class="icons">
+                            <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
+                            <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
+                        </div>`; 
+        chatHistoryDiv.classList.add("chathistory-image-item"); 
+    } else {
+        prompt_html = `${chat_data.chathistory_title}
+                        <div class="icons">
+                            <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
+                            <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
+                        </div>`; 
+    }
+    chatHistoryDiv.classList.add("chathistory-item"); 
     chatHistoryDiv.setAttribute('onclick', `selectChatHistory('${chat_data.chathistory_id}')`);
     chatHistoryDiv.id = `chat${chat_data.chathistory_id}`;  
     chatHistoryDiv.innerHTML = prompt_html; 
@@ -876,12 +891,16 @@ const fetchResponse = async (incomingChatDiv) => {
             // console.log(response) 
             // create response element 
             element = document.createElement("img"); 
-            const chat_data = await response.json();
+            const chat_data = await response.json(); 
+            console.log(chat_data.chathistory_id); 
             element.src = chat_data.image_response; 
             element.id = "chat-image"; 
             element.onclick = function() {
-                openModal(imgElement.src); 
+                openModal(element.src); 
             };
+
+            // update side bar 
+            updateSideBarList(chat_data); 
         }
 
         // reset form 
@@ -1022,17 +1041,22 @@ function triggerFileInput() {
     document.getElementById('fileInput').click();
 }
 
+// trigger form submission 
+function submitForm() {
+    document.getElementById('hiddenButton').click(); 
+}
+
 window.onload = function(){
     // handleOutgoingChat(); 
-    const form = document.getElementById('form-query');
-    form.addEventListener('submit', function(event){
+    const form = document.getElementById('form-query'); 
+    form.addEventListener('submit', function(event) {
         event.preventDefault();
         handleOutgoingChat();
         // fetchResponse();
     })
 
     const fetchBtn = document.getElementById('query-box');
-    fetchBtn.addEventListener('keydown', function(event){
+    fetchBtn.addEventListener('keydown', function(event) {
         if(event.key == 'Enter'){
             event.preventDefault();
             // handleOutgoingChat();
@@ -1045,6 +1069,7 @@ window.onload = function(){
 function openModal(imageSrc) {
     console.log(imageSrc); 
     // display the modal
+    document.querySelector('.typing-container').style.display = 'none'; 
     document.getElementById('myModal').style.display = 'flex';
 
     // set the image source in the modal
@@ -1052,7 +1077,8 @@ function openModal(imageSrc) {
 }
 
 function closeModal() {
-    // hide the modal
+    // hide the modal 
+    document.querySelector('.typing-container').style.display = 'flex'; 
     document.getElementById('myModal').style.display = 'none';
 }
 

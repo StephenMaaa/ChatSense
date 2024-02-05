@@ -63,10 +63,10 @@ class Theme(models.Model):
 class ImageQueries(models.Model):
     id = models.AutoField(primary_key=True)
     # user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    chathistory_id = models.ForeignKey(ChatHistories, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=1000)
     image = models.ImageField(upload_to='images/')
     image_response = models.ImageField(upload_to='images/')
+    chathistory_id = models.ForeignKey(ChatHistories, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

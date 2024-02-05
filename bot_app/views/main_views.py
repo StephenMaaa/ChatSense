@@ -66,7 +66,7 @@ def create(request, query, model_name):
     # query_resp = {
     #     'chathistory_id':unique_id
     # }
-    return request, unique_id
+    return request, queries
 
 def process_sentence(sentence, max_length=20):
     words = sentence.split()
