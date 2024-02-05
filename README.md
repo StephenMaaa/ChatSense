@@ -17,9 +17,9 @@
 - [X] Integrate CLIP model into the app (front-end, backend) 
 - [X] Integrate CodeLlama (front-end, backend) 
 - [X] App header with dropdown model select 
-- [X] Logout 
 - [X] Scrolling sidebars (chat container and side bar) 
 - [X] Multiple chats (side bar) for Llama 2 
+- [X] User settings (theme, logout, delete, profile) 
 - [ ] Multiple chats for Code Llama and CLIP [PENDING] 
 
 ## Setup

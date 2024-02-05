@@ -47,8 +47,8 @@ def llamaHomepage(request):
         if items:
             print(f"{category}:")
             for item in items:
-                print(item)  
-    return render(request, 'index.html', {'data': data}) 
+                print(item) 
+    return render(request, 'index.html', {'data': data, 'username': username}) 
 
 @csrf_exempt
 def updateTheme(request):
@@ -69,6 +69,7 @@ def getTheme(request):
     theme = user_preference.theme
     return JsonResponse({'theme': theme})
 
+# delete chat history 
 @csrf_exempt
 def deleteChats(request):
     username = request.session["username"]
@@ -90,6 +91,32 @@ def deleteChats(request):
         ImageQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     return JsonResponse({'message': 'History cleared successfully'}) 
 
+# delete all chats 
+@csrf_exempt
+def deleteAllChats(request):
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+
+    # delete 
+    ChatHistories.objects.filter(user_id=user).delete()
+    session["chathistory_id"] = None 
+    session.save() 
+    request.session["chathistory_id"] = None 
+    return JsonResponse({'message': 'Successfully delete all chats'}) 
+
+# delete account 
+@csrf_exempt
+def deleteAccount(request):
+    username = request.session["username"]
+    User.objects.filter(name=username).delete() 
+
+    session["username"] = None 
+    session["chathistory_id"] = None 
+    session.save() 
+    
+    request.session["username"] = None 
+    request.session["chathistory_id"] = None 
+    return JsonResponse({'message': 'Successfully delete account'}) 
 
 # signin 
 def signin(request):
@@ -202,6 +229,44 @@ def categorize_dates(data):
             categorized_data['Previous 30 Days'].append(item)
 
     return categorized_data 
+
+@csrf_exempt
+def uploadProfile(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    
+    # load image 
+    if request.method == 'POST' and request.FILES.get('image'):
+        profile_image = request.FILES['image']
+        user.profile = profile_image
+        user.save() 
+    
+    print(profile_image)
+    print(user.profile.url)
+    return JsonResponse({'success': True}) 
+
+@csrf_exempt
+def getProfile(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+    profile_image = user.profile.url if user.profile else "" 
+    return JsonResponse({'username': user.name, 'profile_image': profile_image}) 
+
+# update username 
+@csrf_exempt
+def updateUsername(request): 
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+
+    # update 
+    newUsername = request.POST.get("username") 
+    user.name = newUsername 
+    user.save() 
+
+    session["username"] = newUsername 
+    session.save() 
+    request.session["username"] = newUsername 
+    return JsonResponse({'success': True}) 
 
 # # generate unique id for chat history 
 # def generate_unique_id(model_name): 
