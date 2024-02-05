@@ -6,9 +6,9 @@
 ## Features
 
 - Chat completions powered by Llama 2 
-- Text-image/image-image search chat powered by CLIP (with FAISS) 
 - Code completions powered by Code Llama 
-- Side bar window for multiple chat histories 
+- Text-image/image-image search chat powered by CLIP (with FAISS) 
+- Side bar window for multiple chat histories for three models 
 - ChatGPT-style GUI 
 - Store and load user's chat history in local storage 
  
@@ -20,7 +20,9 @@
 - [X] Scrolling sidebars (chat container and side bar) 
 - [X] Multiple chats (side bar) for Llama 2 
 - [X] User settings (theme, logout, delete, profile) 
-- [ ] Multiple chats for Code Llama and CLIP [PENDING] 
+- [X] Multiple chats for Code Llama 
+- [X] Multiple chats for CLIP 
+- [] Data import/export [PENDING] 
 
 ## Setup
 
