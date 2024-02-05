@@ -302,8 +302,8 @@ function createChatHistory(chat_data) {
     const chatHistoryDiv = document.createElement("div");
     const prompt_html = `${chat_data.chathistory_title}
                             <div class="icons">
-                            <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
-                            <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
+                                <i class="fas fa-trash" onclick="deleteChatHistory('${chat_data.chathistory_id}')"></i>
+                                <i class="star ${chat_data.starred} fa-star" onclick="toggleStar('${chat_data.chathistory_id}')"></i>
                             </div>` 
     chatHistoryDiv.className = "chathistory-item"; 
     chatHistoryDiv.setAttribute('onclick', `selectChatHistory('${chat_data.chathistory_id}')`);
@@ -861,8 +861,12 @@ const fetchResponse = async (incomingChatDiv) => {
             // console.log(response) 
             // create response element 
             element = document.createElement("p"); 
-            const chat_data = await response.json();
+            const chat_data = await response.json(); 
+            console.log(chat_data.chathistory_id); 
             element.textContent = chat_data.query_response; 
+
+            // update side bar 
+            updateSideBarList(chat_data); 
         } else {
             response = await fetch('fetch_image', {
                 method:'POST',

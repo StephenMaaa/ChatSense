@@ -9,11 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Google Fonts Link For Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     {{ data|json_script:"data" }}
+    {{ username|json_script:"username" }}
     <script src="{% static 'js/chatbot.js' %}" defer></script>
   </head>
   <body>
-    <header class="appHeader" onmouseleave="hideDropdown()" id="header">
+    <header class="appHeader adjust-width" onmouseleave="hideDropdown()" id="header">
+      <span id="newchat-main-btn" class="material-symbols-rounded">edit_square</span>
       <div class="model-dropdown" id="modelDropdown" onmouseenter="showDropdown()">
         <div class="dropdown-header" onclick="toggleDropdown()">Code Llama</div>
         <div class="dropdown-list" onmouseleave="hideDropdown()">
@@ -21,15 +24,57 @@
           <div class="dropdown-item" onclick="selectModel('clip')">CLIP</div>
         </div>
       </div>
-      <span id="logout-btn" class="material-symbols-rounded">logout</span>
+      <!-- <span id="logout-btn" class="material-symbols-rounded">logout</span> -->
     </header>
 
+    <!-- Open button with icon to toggle sidebar -->
+    <div class="open-btn" onclick="toggleSidebar()">&#9776;</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="newchat-btn">
+        <div>New Chat</div>
+        <!-- New Chat -->
+        <!-- <span class="material-symbols-rounded">edit_square</span> -->
+        <i class="material-symbols-rounded" id="newchat-icon">edit_square</i>
+      </div>
+      <div class="chat-history">
+        <!-- <div class="chathistory-item" id="chat1" onclick="selectChatHistory(1)">Code Llama
+          <div class="icons">
+            <i class="fas fa-trash" onclick="deleteChatHistory(1)"></i>
+            <i class="star far fa-star" onclick="toggleStar(1)"></i>
+          </div>
+        </div>
+        <div class="chathistory-item" id="chat2" onclick="selectChatHistory(2)">CLIP
+          <div class="icons">
+            <i class="fas fa-trash" onclick="deleteChatHistory(2)"></i>
+            <i class="star far fa-star" onclick="toggleStar(2)"></i>
+          </div>
+        </div> -->
+      </div>
+      <div class="user-btn" onclick="toggleNavigation()">
+        <img src="static/images/user.jpg" id="user-profile" alt="user-img"></img>
+        <div class="user"></div>
+        <div class="navigation-list" id="navigationList">
+          <nav>
+            <a class="settings-border" onclick="openSettings()">
+              <span id="newchat-icon" class="material-symbols-rounded user-icons">settings</span>
+              Settings</a>
+            <a id="logout-btn">
+              <span class="material-symbols-rounded user-icons">logout</span>
+              Logout</a>
+            <!-- Add more items as needed -->
+          </nav>
+        </div>
+      </div>
+    </div>
+
     <!-- Chats container -->
-    <div class="chat-container"></div>
+    <div class="chat-container adjust-width"></div>
     
     <!-- Typing container -->
-    <div class="typing-container">
-      <div class="typing-content">
+    <div class="typing-container adjust-width">
+      <div class="typing-content adjust-left">
         <form method="post" id="form-query">
             {% csrf_token %}
             <div class="typing-textarea">
@@ -38,9 +83,82 @@
             </div>
         </form>
         <div class="typing-controls">
-          <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
+          <!-- <span id="theme-main-btn" class="material-symbols-rounded">light_mode</span> -->
           <span id="delete-btn" class="material-symbols-rounded">delete</span>
           <!-- <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span> -->
+      </div>
+    </div>
+
+    <!-- Settings modal -->
+    <div class="outer-modal">
+      <div class="modal-wrapper">
+        <div class="grid-modal">
+          <div class="settings-modal" id="settingsModal">
+            <div class="settings-header settings-item">
+              <div class="settings-title-container">
+                <h2 class="settings-title">Settings</h2>
+              </div>
+              <span class="material-symbols-rounded close-btn" onclick="closeSettings()">close</span>
+            </div>
+            <div>
+              <div data-orientation="vertical" class="settings-content general-settings">
+                <div data-orientation="vertical" class="settings-selector">
+                  <div class="selector-item" onclick="selectSettings(this)" data-info="general">
+                    <span class="material-symbols-rounded settings-icons">settings</span>
+                    <div class="inner-selector">General</div>
+                  </div>
+                  <div class="selector-item" onclick="selectSettings(this)" data-info="profile">
+                    <span class="material-symbols-rounded settings-icons">account_circle</span>
+                    <div class="inner-selector">Profile</div>
+                  </div>
+                </div>
+                <div data-orientation="vertical" class="main-settings" id="general">
+                  <div class="settings-list">
+                    <div class="settings-item">
+                      <div class="inner-settings-item">
+                        <div>Theme</div>
+                        <div class="theme-toggle active" id="theme-btn" data-info="dark_mode"></div>
+                      </div>
+                    </div>
+                    <div class="settings-item">
+                      <div class="inner-settings-item">
+                        <div>Delete all chats</div>
+                        <button class="delete-settings-btn">
+                          <div class="inner-delete-settings" id="delete-all-btn" onclick="deleteAllChats()">Delete all</div>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="settings-item">
+                      <div class="inner-settings-item">
+                        <div>Delete account</div>
+                        <button class="delete-settings-btn">
+                          <div class="inner-delete-settings" id="delete-account-btn" onclick="deleteAccount()">Delete</div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div data-orientation="vertical" class="main-settings" id="profile">
+                  <div class="profile-container">
+                    <input type="file" name="profile-picture" accept="image/*" id="profile-input" onchange="uploadProfile()">
+                    <div class="profile">
+                      <img src="static/images/user.jpg" class="profile-image" onclick="triggerUploadProfile()">
+                    </div>
+                  </div>
+                  <div class="username-container">
+                    <div class="username-box">
+                      <span class="username"></span>
+                      <input type="text" id="changeUsername" />
+                      <span id="edit-username-btn" class="material-symbols-rounded" onclick="toggleEdit()">edit</span>
+                      <span id="done-username-btn" class="material-symbols-rounded" onclick="updateUsername()">done</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
