@@ -53,7 +53,7 @@
         </div> -->
       </div>
       <div class="user-btn" onclick="toggleNavigation()">
-        <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+        <img src="static/images/user.jpg" id="user-profile" alt="user-img"></img>
         <div class="user"></div>
         <div class="navigation-list" id="navigationList">
           <nav>
@@ -124,7 +124,15 @@
                       <div class="inner-settings-item">
                         <div>Delete all chats</div>
                         <button class="delete-settings-btn">
-                          <div class="inner-delete-settings" id="delete-all-btn">Delete all</div>
+                          <div class="inner-delete-settings" id="delete-all-btn" onclick="deleteAllChats()">Delete all</div>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="settings-item">
+                      <div class="inner-settings-item">
+                        <div>Delete account</div>
+                        <button class="delete-settings-btn">
+                          <div class="inner-delete-settings" id="delete-account-btn" onclick="deleteAccount()">Delete</div>
                         </button>
                       </div>
                     </div>

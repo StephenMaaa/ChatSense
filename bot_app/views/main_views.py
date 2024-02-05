@@ -69,6 +69,7 @@ def getTheme(request):
     theme = user_preference.theme
     return JsonResponse({'theme': theme})
 
+# delete chat history 
 @csrf_exempt
 def deleteChats(request):
     username = request.session["username"]
@@ -90,6 +91,32 @@ def deleteChats(request):
         ImageQueries.objects.filter(chathistory_id=chathistory_id).delete() 
     return JsonResponse({'message': 'History cleared successfully'}) 
 
+# delete all chats 
+@csrf_exempt
+def deleteAllChats(request):
+    username = request.session["username"]
+    user = User.objects.get(name=username)
+
+    # delete 
+    ChatHistories.objects.filter(user_id=user).delete()
+    session["chathistory_id"] = None 
+    session.save() 
+    request.session["chathistory_id"] = None 
+    return JsonResponse({'message': 'Successfully delete all chats'}) 
+
+# delete account 
+@csrf_exempt
+def deleteAccount(request):
+    username = request.session["username"]
+    User.objects.filter(name=username).delete() 
+
+    session["username"] = None 
+    session["chathistory_id"] = None 
+    session.save() 
+    
+    request.session["username"] = None 
+    request.session["chathistory_id"] = None 
+    return JsonResponse({'message': 'Successfully delete account'}) 
 
 # signin 
 def signin(request):

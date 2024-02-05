@@ -341,13 +341,8 @@ i.fa-trash {
   /* justify-content: space-between;  */
 }
 
-#chat-profile {
-  width: 35px;
-  height: 35px;
-  align-self: flex-start;
-  object-fit: cover;
-  border-radius: 2px; 
-  margin-right: 10px;
+#user-profile {
+  margin-right: 10px; 
 }
 
 .user {
@@ -1000,7 +995,7 @@ span.material-symbols-rounded {
   align-items: center;
 }
 
-.chat .chat-details #chat-profile {
+.chat .chat-details #chat-profile, #user-profile {
   width: 35px;
   height: 35px;
   align-self: flex-start;
@@ -1211,7 +1206,7 @@ input#query-box.chat-input {
     padding: 20px 10px;
   }
 
-  .chat-container .chat #chat-profile {
+  .chat-container .chat #chat-profile, #user-profile {
     height: 32px;
     width: 32px;
   }

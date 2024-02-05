@@ -559,17 +559,71 @@ function loadProfile() {
     var profile_image;  
     $.get('get_profile', function(data) {
         profile_image = data.profile_image; 
+
+        // check init 
+        if (profile_image === "") {
+            profile_image = "static/images/user.jpg"; 
+        }
         console.log('Current Profile:', profile_image); 
         
         // set profiles 
-        var userButtonImage = document.getElementById("chat-profile"); 
+        var userButtonImage = document.getElementById("user-profile"); 
         userButtonImage.src = profile_image; 
 
         var profileImage = document.querySelector(".profile-image"); 
         profileImage.src = profile_image; 
+
+        // set profiles in chat container (if selected) 
+        const selectedChatHistory = document.querySelector('.chat-history .selected'); 
+        if (selectedChatHistory != null) {
+            const chats = chatContainer.querySelectorAll(".outgoing #chat-profile"); 
+            chats.forEach(item => {
+                item.src = profile_image; 
+            }); 
+        }
     }); 
 }
 
+function deleteAllChats() {
+    // delete from backend 
+    // remove the chats from local storage 
+    $.post('delete_all_chats', 
+    {
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+    }, 
+    function(data) {
+        console.log("Successfully delete all chats!"); 
+    });
+    
+    // delete from side bar window 
+    chatHistoryContainer.innerHTML = ""; 
+
+    // reload empty chat container 
+    console.log(model.textContent); 
+    if (model.textContent === "Llama 2") {
+        loadLlamaChatHistory(null); 
+    } else if (model.textContent === "CLIP") {
+        loadCLIPChatHistory(null); 
+    } else if (model.textContent === "Code Llama") {
+        loadLlamaChatHistory(null); 
+    }
+}
+
+function deleteAccount() {
+    // delete from backend 
+    $.post('delete_account', 
+    {
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+    }, 
+    function(data) {
+        console.log("Successfully delete account!"); 
+    }); 
+
+    // redirect to the login page 
+    window.location.href = "/"; 
+}
+
+// load main page 
 document.addEventListener('DOMContentLoaded', function() {
     // // handle refreshing page 
     // const navigationEntries = performance.getEntriesByType('navigation');
@@ -639,9 +693,10 @@ function loadLlamaChatHistory(chat) {
             console.log("running"); 
     
             // fetch prompt 
+            const userProfile = document.getElementById("user-profile").src; 
             const prompt_html = `<div class="chat-content">
                             <div class="chat-details">
-                                <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+                                <img src="${userProfile}" id="chat-profile" alt="user-img"></img>
                                 <p>${item.question_text}</p>
                             </div>
                         </div>`;
@@ -691,9 +746,10 @@ function loadCLIPChatHistory(chat) {
             console.log("running"); 
     
             // fetch prompt 
+            const userProfile = document.getElementById("user-profile").src; 
             var prompt_html = `<div class="chat-content">
                             <div class="chat-details">
-                                <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+                                <img src="${userProfile}" id="chat-profile" alt="user-img"></img>
                             </div>
                         </div>`; 
     
@@ -883,9 +939,10 @@ const handleOutgoingChat = () => {
     // if(!userText) return; // If chatInput is empty return from here 
 
     // create user div 
+    const userProfile = document.getElementById("user-profile").src; 
     var html = `<div class="chat-content">
                     <div class="chat-details">
-                        <img src="static/images/user.jpg" id="chat-profile" alt="user-img"></img>
+                        <img src="${userProfile}" id="chat-profile" alt="user-img"></img>
                     </div>
                 </div>`; 
     const outgoingChatDiv = createChatElement(html, "outgoing"); 
