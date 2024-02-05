@@ -19,7 +19,7 @@ import torch
 import uuid
 from django.utils import timezone
 from datetime import datetime, timedelta
-# from .main_views import categorize_dates
+from .main_views import create, process_sentence, generate_unique_id 
 
 
 # creates a session store.
@@ -41,43 +41,43 @@ llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-
 
 # def loadChatHistory(request): 
 
-# create new chat 
-def create(request, query, model_name): 
-    username = request.session["username"]
-    user = User.objects.get(name=username)
-    unique_id = generate_unique_id(request, model_name) 
+# # create new chat 
+# def create(request, query, model_name): 
+#     username = request.session["username"]
+#     user = User.objects.get(name=username)
+#     unique_id = generate_unique_id(request, model_name) 
 
-    # process chat history title 
-    chathistory_title = process_sentence(query.cleaned_data["query"], 20) 
-    queries = ChatHistories(user_id=user, chathistory_id=unique_id, chathistory_title=chathistory_title, model=model_name)  
-    queries.save()              # saves the query and response into database. 
-    # session.chathistory_id = unique_id
-    session["chathistory_id"] = unique_id
-    session.save()
-    request.session["chathistory_id"] = unique_id
-    # query_resp = {
-    #     'chathistory_id':unique_id
-    # }
-    return request, unique_id
+#     # process chat history title 
+#     chathistory_title = process_sentence(query.cleaned_data["query"], 20) 
+#     queries = ChatHistories(user_id=user, chathistory_id=unique_id, chathistory_title=chathistory_title, model=model_name)  
+#     queries.save()              # saves the query and response into database. 
+#     # session.chathistory_id = unique_id
+#     session["chathistory_id"] = unique_id
+#     session.save()
+#     request.session["chathistory_id"] = unique_id
+#     # query_resp = {
+#     #     'chathistory_id':unique_id
+#     # }
+#     return request, unique_id
 
-def process_sentence(sentence, max_length=20):
-    words = sentence.split()
-    processed_words = []
-    current_length = 0
+# def process_sentence(sentence, max_length=20):
+#     words = sentence.split()
+#     processed_words = []
+#     current_length = 0
 
-    for word in words:
-        if current_length + len(word) <= max_length:
-            processed_words.append(word)
-            current_length += len(word) + 1 
-        else:
-            break
+#     for word in words:
+#         if current_length + len(word) <= max_length:
+#             processed_words.append(word)
+#             current_length += len(word) + 1 
+#         else:
+#             break
 
-    processed_sentence = ' '.join(processed_words)
+#     processed_sentence = ' '.join(processed_words)
 
-    # check trailing space 
-    if (current_length < len(sentence)): 
-        processed_sentence += " ..." 
-    return processed_sentence 
+#     # check trailing space 
+#     if (current_length < len(sentence)): 
+#         processed_sentence += " ..." 
+#     return processed_sentence 
 
 # Whenever user clicks requests for a response, the server will send a prompt to the LLM model. And return the response to the html page.
 @csrf_exempt
@@ -99,6 +99,7 @@ def fetchResponse(request):
             # print(chatHistory)
                 
             # update session 
+            chatHistory = chatHistory if type(chatHistory) == str else chatHistory.chathistory_id 
             session["chathistory_id"] = chatHistory
             session.save()
             request.session["chathistory_id"] = chatHistory
@@ -107,7 +108,7 @@ def fetchResponse(request):
             result = HttpResponse(waitForResult(func=fetchResponseFromModel, request=request, query=query), content_type='application/json') 
             print(result)
             # return HttpResponse(waitForResult(request=request, query=query), content_type='application/json')  
-            return result      
+            return result 
 
 
 def waitForResult(func, request, query):
@@ -154,31 +155,31 @@ def fetchResponseFromModel(request, query):
     }
     return JsonResponse(query_resp)
 
-# generate unique id for chat history 
-def generate_unique_id(request, model_name): 
-    # generate a unique ID (UUID)
-    unique_id = uuid.uuid4()
+# # generate unique id for chat history 
+# def generate_unique_id(request, model_name): 
+#     # generate a unique ID (UUID)
+#     unique_id = uuid.uuid4()
 
-    # convert the UUID to a string if needed
-    unique_id = str(unique_id) 
+#     # convert the UUID to a string if needed
+#     unique_id = str(unique_id) 
 
-    # check = False; 
-    # unique_id = ""; 
+#     # check = False; 
+#     # unique_id = ""; 
 
-    # while (not check): 
-    #     # generate a unique ID (UUID)
-    #     unique_id = uuid.uuid4()
+#     # while (not check): 
+#     #     # generate a unique ID (UUID)
+#     #     unique_id = uuid.uuid4()
 
-    #     # convert the UUID to a string if needed
-    #     unique_id = str(unique_id) 
+#     #     # convert the UUID to a string if needed
+#     #     unique_id = str(unique_id) 
 
-    #     # check uniqueness 
-    #     username = request.session["username"]
-    #     user = User.objects.get(name=username)        
-    #     if (model_name == "Llama 2"): 
-    #         check = UserQueries.objects.filter(user_id=user).exists()
-    #     elif (model_name == "Code Llama"): 
-    #         check = CodeQueries.objects.filter(user_id=user).exists() 
-    #     else: 
-    #         check = ImageQueries.objects.filter(user_id=user).exists()
-    return unique_id
+#     #     # check uniqueness 
+#     #     username = request.session["username"]
+#     #     user = User.objects.get(name=username)        
+#     #     if (model_name == "Llama 2"): 
+#     #         check = UserQueries.objects.filter(user_id=user).exists()
+#     #     elif (model_name == "Code Llama"): 
+#     #         check = CodeQueries.objects.filter(user_id=user).exists() 
+#     #     else: 
+#     #         check = ImageQueries.objects.filter(user_id=user).exists()
+#     return unique_id

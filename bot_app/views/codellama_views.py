@@ -10,12 +10,13 @@ from django.conf import settings
 from ..forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries
+from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, CodeQueries, ChatHistories
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import threading
 import torch
+from .main_views import categorize_dates, create, process_sentence, generate_unique_id 
 
 
 # creates a session store.
@@ -23,18 +24,25 @@ session = SessionStore(session_key=settings.SESSION_KEY)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # added to load gguf models
-codellama = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="codellama-34b.Q5_K_M.gguf", model_type="llama", gpu_layers=16)
+codellama = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="codellama-34b.Q5_K_M.gguf", model_type="llama", gpu_layers=0)
 
-
-# Displays the previous queries asked by the user.
+# Code Llama page 
 def codellamaHomepage(request):
-    # print(os.getcwd())
     username = request.session["username"]
-    user = User.objects.get(name=username)
-    data = CodeQueries.objects.filter(user_id=user).values('question_text', 'query_response')
-    data = list(data.values())
-    print(len(data))
-    return render(request, 'codellama.html', {'data': data}) 
+    print(username) 
+    user = User.objects.get(name=username) 
+
+    chatHistories = ChatHistories.objects.filter(user_id=user, model="Code Llama").values('chathistory_id', 'chathistory_title', 'starred', 'timestamp') 
+    chatHistories = list(chatHistories.values()) 
+    data = categorize_dates(chatHistories) 
+    # data = list(data.values())
+
+    for category, items in data.items():
+        if items:
+            print(f"{category}:")
+            for item in items:
+                print(item) 
+    return render(request, 'codellama.html', {'data': data, 'username': username}) 
 
 
 # Whenever user clicks requests for a response, the server will send a prompt to the LLM model. And return the response to the html page.
@@ -42,15 +50,31 @@ def codellamaHomepage(request):
 def fetchCode(request):
     print(request.method)
     print(request)
+
+    
     if request.method == "POST":
-        query = QueryForm(request.POST)
-        print(query)
+        query = QueryForm(request.POST) 
+
         if query.is_valid():
+            # check status (get chathistory id) 
+            chatHistory = request.POST.get("chathistory_id")
+            model_name = request.POST.get("model_name")
+            print(chatHistory)
+            if (chatHistory == "empty"): 
+                request, chatHistory = create(request, query, model_name)
+            # print(chatHistory)
+                
+            # update session 
+            chatHistory = chatHistory if type(chatHistory) == str else chatHistory.chathistory_id 
+            session["chathistory_id"] = chatHistory
+            session.save()
+            request.session["chathistory_id"] = chatHistory
+            print(request.session["chathistory_id"])
+
             result = HttpResponse(waitForResult(func=fetchResponseFromCodeLlama, request=request, query=query), content_type='application/json') 
             print(result)
             # return HttpResponse(waitForResult(request=request, query=query), content_type='application/json')  
-            return result      
-
+            return result 
 
 def waitForResult(func, request, query):
     # if multiple user ask question to llama2 this method will wait until the lock has been released.
@@ -77,12 +101,22 @@ def fetchResponseFromCodeLlama(request, query):
     prompt = "Q: " + query_text + "? A:"
     output = codellama(prompt) # fetches the response from the model
     response = output
+    print(response)
+
     user: User = User.objects.get(name=request.session["username"]) 
-    queries = CodeQueries(question_text=query_text, query_response=response, user_id=user,
-                                timestamp=timezone.now())
-    queries.save()              # saves the query and response into database.
+    chathistory_id: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=request.session["chathistory_id"])
+    queries = CodeQueries(question_text=query_text, query_response=response, chathistory_id=chathistory_id)
+    queries.save()              # saves the query and response into database 
+
+    # update chat history timestamp 
+    chathistory_id.timestamp = queries.timestamp 
+    chathistory_id.save() 
+
     query_resp = {
         'question_text':queries.question_text,
-        'query_response':response
+        'query_response':response, 
+        'chathistory_id':request.session["chathistory_id"], 
+        'chathistory_title':chathistory_id.chathistory_title, 
+        'starred': chathistory_id.starred 
     }
-    return JsonResponse(query_resp)
+    return JsonResponse(query_resp) 

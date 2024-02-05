@@ -79,7 +79,8 @@
             {% csrf_token %}
             <div class="typing-textarea">
                 <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here" required>
-                <button class="material-symbols-rounded" name="btnAsk" id="queryBtn" type="submit">send</button>
+                <span class="material-symbols-rounded" name="btnAsk" id="queryBtn" onclick="submitForm()">send</span>
+                <button id="hiddenButton" type="submit" style="display: none;"></button>
             </div>
         </form>
         <div class="typing-controls">
@@ -144,8 +145,6 @@
                     <input type="file" name="profile-picture" accept="image/*" id="profile-input" onchange="uploadProfile()">
                     <div class="profile">
                       <img src="static/images/user.jpg" class="profile-image" onclick="triggerUploadProfile()">
-                      <!-- <input type="file" name="profile-picture" accept="image/*" id="profile-input"> -->
-                      <!-- <button type="submit" class="profile-button" onclick="print()"></button> -->
                     </div>
                   </div>
                   <div class="username-container">

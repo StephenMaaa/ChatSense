@@ -10,11 +10,12 @@ from django.conf import settings
 from ..forms import QueryForm, SignInForm, SignUpForm, ThemeForm, ImageForm
 from django.contrib import messages
 # from llama_cpp import Llama
-from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries
+from ..models import User, SessionDetails, UserQueries, Theme, ImageQueries, ChatHistories
 from ctransformers import AutoModelForCausalLM
 from langchain.llms import CTransformers
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import threading
+from .main_views import categorize_dates, create, process_sentence, generate_unique_id 
 
 # clip imports 
 import torch
@@ -32,28 +33,71 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # added to load gguf models 
 clip_model, preprocess = clip.load('ViT-B/32', device) 
 
-
-def clipHomepage(request): 
+# CLIP page  
+def clipHomepage(request):
     username = request.session["username"]
-    user = User.objects.get(name=username)
-    data = ImageQueries.objects.filter(user_id=user).values('question_text', 'image', 'image_response')
-    data = list(data.values())
-    print(len(data))
-    for item in data: 
-        print(item["image_response"])
-    return render(request, 'clip.html', {'data': data}) 
+    print(username) 
+    user = User.objects.get(name=username) 
 
+    chatHistories = ChatHistories.objects.filter(user_id=user, model="CLIP").values('chathistory_id', 'chathistory_title', 'starred', 'timestamp') 
+    chatHistories = list(chatHistories.values()) 
+    data = categorize_dates(chatHistories) 
+    # data = list(data.values())
+
+    for category, items in data.items():
+        if items:
+            print(f"{category}:")
+            for item in items:
+                print(item) 
+    return render(request, 'clip.html', {'data': data, 'username': username}) 
+
+# def clipHomepage(request): 
+#     username = request.session["username"]
+#     user = User.objects.get(name=username)
+#     data = ImageQueries.objects.filter(user_id=user).values('question_text', 'image', 'image_response')
+#     data = list(data.values())
+#     print(len(data))
+#     for item in data: 
+#         print(item["image_response"])
+#     return render(request, 'clip.html', {'data': data}) 
 
 @csrf_exempt
-def fetchImage(request):
-    if request.method == 'POST':
-        query = ImageForm(request.POST, request.FILES)
+def fetchImage(request): 
+    print(request.method)
+    print(request)
+
+    
+    if request.method == "POST":
+        query = ImageForm(request.POST, request.FILES) 
+
         if query.is_valid():
+            # check status (get chathistory id) 
+            chatHistory = request.POST.get("chathistory_id")
+            
+            model_name = request.POST.get("model_name")
+            print(chatHistory)
+            if (chatHistory == "empty"): 
+                request, chatHistory = create(request, query, model_name) 
+
+                # handle none input of text for CLIP 
+                if (not chatHistory.chathistory_title): 
+                    print("not")
+                    chatHistory.chathistory_title = "[IMAGE_TITLE]" 
+                    chatHistory.save() 
+            # print(chatHistory)
+            
+            # update session 
+            chatHistory = chatHistory if type(chatHistory) == str else chatHistory.chathistory_id 
+            session["chathistory_id"] = chatHistory
+            session.save()
+            request.session["chathistory_id"] = chatHistory
+            print(request.session["chathistory_id"])
+
             result = HttpResponse(waitForResult(func=fetchResponseFromCLIP, request=request, query=query), content_type='application/json') 
             print(result)
+            # return HttpResponse(waitForResult(request=request, query=query), content_type='application/json')  
             return result 
         
-
 def waitForResult(func, request, query):
     # if multiple user ask question to llama2 this method will wait until the lock has been released.
     # while not lock.acquire():
@@ -103,16 +147,27 @@ def fetchResponseFromCLIP(request, query):
     )
 
     user: User = User.objects.get(name=request.session["username"]) 
-    queries = ImageQueries(user_id=user, question_text=query_text, image=query_image, image_response=image_response, 
-                                timestamp=timezone.now())
-    queries.save()              # saves the query and response into database.
+    chathistory: ChatHistories = ChatHistories.objects.get(user_id=user, chathistory_id=request.session["chathistory_id"])
+    queries = ImageQueries(question_text=query_text, image=query_image, image_response=image_response, chathistory_id=chathistory)
+    queries.save()              # saves the query and response into database 
+
+    # update chat history timestamp 
+    chathistory.timestamp = queries.timestamp 
+
+    # handle [IMAGE_TITLE] 
+    if (chathistory.chathistory_title == "[IMAGE_TITLE]"): 
+        chathistory.chathistory_title = "[IMAGE_TITLE]" + queries.image.url 
+    chathistory.save() 
 
     question_text = queries.question_text if queries.question_text else None 
     image = queries.image.url if queries.image else None 
     query_resp = {
         'question_text':question_text,
         'image':image, 
-        'image_response':queries.image_response.url
+        'image_response':queries.image_response.url, 
+        'chathistory_id':request.session["chathistory_id"], 
+        'chathistory_title':chathistory.chathistory_title, 
+        'starred': chathistory.starred 
     }
     print(query_resp)
     return JsonResponse(query_resp)
