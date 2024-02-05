@@ -22,7 +22,8 @@
 - [X] User settings (theme, logout, delete, profile) 
 - [X] Multiple chats for Code Llama 
 - [X] Multiple chats for CLIP 
-- [] Data import/export [PENDING] 
+- [ ] Data import/export [PENDING] 
+- [ ] Refine minor UI [PENDING] 
 
 ## Setup
 
