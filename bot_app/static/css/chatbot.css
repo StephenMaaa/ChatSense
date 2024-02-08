@@ -160,7 +160,7 @@ header {
   left: 0; /* Move sidebar to the left */
   background-color: #000;
   overflow-y: hidden; 
-  transition: 0.5s;
+  transition: 0.25s;
   padding-top: 10px;
   padding-bottom: 10px;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2); 
@@ -176,7 +176,7 @@ header {
   transform: translateY(-50%);
   /* z-index: 2; */
   color: var(--text-color);
-  transition: left 0.5s; /* Add transition for smooth movement */
+  transition: left 0.25s; /* Add transition for smooth movement */
 }
 
 .open-btn:hover {
@@ -198,12 +198,12 @@ header {
 /* Class for elements that need their width adjusted */
 .adjust-width {
   margin-left: 0;
-  transition: margin-left 0.5s; /* Add transition for smooth movement */
+  transition: margin-left 0.25s; /* Add transition for smooth movement */
 }
 
 .adjust-left {
   margin-left: -5.5%;
-  transition: margin-left 0.5s; /* Add transition for smooth movement */
+  transition: margin-left 0.25s; /* Add transition for smooth movement */
 }
 
 /* ChatGPT-styled layout */
@@ -240,7 +240,7 @@ header {
   background-color: rgba(0, 0, 0, 0.2); /* set the background color */ 
   border-radius: 4px; 
   display: flex;
-  transition: margin-left 0.5s;
+  transition: margin-left 0.25s;
   justify-content: space-between;
   /* font-weight: bold;  */
   z-index: 2;
@@ -343,7 +343,6 @@ i.fa-trash {
   z-index: 2;
   display: flex;
   align-items: center;
-  /* justify-content: space-between;  */
 }
 
 #user-profile {
