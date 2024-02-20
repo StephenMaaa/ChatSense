@@ -202,7 +202,7 @@ header {
 }
 
 .adjust-left {
-  margin-left: -5.5%;
+  margin-left: 0;
   transition: margin-left 0.25s; /* Add transition for smooth movement */
 }
 
@@ -1077,7 +1077,7 @@ span.material-symbols-rounded {
   display: flex;
   max-width: 950px;
   width: 100%;
-  align-items: flex-end;
+  justify-content: center; 
 }
 
 .typing-container .typing-textarea {
@@ -1086,22 +1086,25 @@ span.material-symbols-rounded {
   position: relative;
 }
 
-.typing-textarea input {
-  resize: none;
+.typing-textarea textarea {
+  /* resize: none; */
+  resize: vertical;
   height: 55px;
   width: 100%;
   border: none;
-  padding: 15px 45px 15px 20px;
+  padding: 15px 20px 15px 20px;
   color: var(--text-color);
   font-size: 1rem;
   border-radius: 4px;
   max-height: 250px;
+  /* overflow-y: auto; */
+  overflow: hidden;
   overflow-y: auto;
   background-color: var(--incoming-chat-bg);
   outline: 1px solid var(--incoming-chat-border);
 }
 
-.typing-textarea input::placeholder {
+.typing-textarea textarea::placeholder {
   color: var(--placeholder-color);
 }
 
@@ -1134,7 +1137,7 @@ span.material-symbols-rounded {
   font-size: 1.25rem!important;
 }
 
-input#query-box.chat-input {
+textarea#query-box.chat-input {
   width: 826px; 
 }
 
@@ -1145,7 +1148,7 @@ input#query-box.chat-input {
   visibility: hidden;
 }
 
-.typing-textarea input:valid ~ #queryBtn {
+.typing-textarea textarea:valid ~ #queryBtn {
   visibility: visible;
 }
 
@@ -1227,9 +1230,9 @@ input#query-box.chat-input {
     padding: 15px 10px;
   }
 
-  .typing-textarea input {
+  .typing-textarea textarea {
     height: 45px;
-    padding: 10px 40px 10px 10px;
+    padding: 10px 10px 10px 10px;
   }
 
   .typing-content span button {

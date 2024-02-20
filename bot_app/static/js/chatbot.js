@@ -5,7 +5,7 @@ const chatContainer = document.querySelector(".chat-container");
 const chatHistoryContainer = document.querySelector(".chat-history");
 // const themeButton = document.querySelector("#theme-main-btn");
 const themeButton = document.querySelector("#theme-btn");
-const deleteButton = document.querySelector("#delete-btn");
+// const deleteButton = document.querySelector("#delete-btn");
 const deleteAllButton = document.querySelector("#delete-all-btn");
 const newchatButton = document.querySelector(".newchat-btn");
 const newchatMainButton = document.querySelector("#newchat-main-btn");
@@ -74,7 +74,7 @@ function toggleSidebar() {
         element.style.marginLeft = '0';
       });
       elementsToAdjust2.forEach(element => {
-        element.style.marginLeft = '-5.5%';
+        element.style.marginLeft = '0';
       });
     } else {
       sidebar.style.width = '250px';
@@ -85,7 +85,7 @@ function toggleSidebar() {
         element.style.marginLeft = '250px';
       });
       elementsToAdjust2.forEach(element => {
-        element.style.marginLeft = '-15%';
+        element.style.marginLeft = '-250px';
       });
     }
 
@@ -849,6 +849,11 @@ const fetchResponse = async (incomingChatDiv) => {
             formData.append('chathistory_id', 'empty'); 
         }
         formData.append('model_name', model.textContent); 
+
+        // reset form 
+        form.reset(); 
+        chatInput.style.height = "55px"; 
+        chatContainer.style.paddingBottom = "150px"; 
         
         // fetch response from Llama2/CLIP 
         var response; 
@@ -903,8 +908,8 @@ const fetchResponse = async (incomingChatDiv) => {
             updateSideBarList(chat_data); 
         }
 
-        // reset form 
-        form.reset();
+        // // reset form 
+        // form.reset();
     }catch(error){
         console.error('There was a error with fetching the response : ', error);
         element.classList.add("error");
@@ -1001,18 +1006,18 @@ const handleOutgoingChat = () => {
     setTimeout(showTypingAnimation, 500);
 }
 
-deleteButton.addEventListener("click", () => {
-    // remove the chats from local storage 
-    $.post('delete_chats', 
-      {
-        csrfmiddlewaretoken: "{{ csrf_token }}",
-        model_name: model.textContent
-      }, 
-      function(data) {
-        console.log("Successfully delete!"); 
-        location.reload(); 
-    });
-});
+// deleteButton.addEventListener("click", () => {
+//     // remove the chats from local storage 
+//     $.post('delete_chats', 
+//       {
+//         csrfmiddlewaretoken: "{{ csrf_token }}",
+//         model_name: model.textContent
+//       }, 
+//       function(data) {
+//         console.log("Successfully delete!"); 
+//         location.reload(); 
+//     });
+// });
 
 deleteAllButton.addEventListener("click", () => {
     // remove the chats from local storage 
@@ -1080,6 +1085,18 @@ function closeModal() {
     // hide the modal 
     document.querySelector('.typing-container').style.display = 'flex'; 
     document.getElementById('myModal').style.display = 'none';
+}
+
+function resizeTextarea(element) {
+    console.log("change"); 
+    element.style.height = "auto"; // Reset height to auto
+    element.style.height = (element.scrollHeight + 10) + "px"; // Set new height
+
+    const typingContainer = document.querySelector(".typing-container"); 
+    chatContainer.style.paddingBottom = Math.max(typingContainer.scrollHeight, 150) + "px"; 
+
+    chatContainer.scrollTo(0, chatContainer.scrollHeight); 
+    // console.log(container.style.paddingBottom); 
 }
 
 var generalButton = document.querySelector('[data-info="general"]'); 
