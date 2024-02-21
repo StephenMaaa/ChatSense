@@ -854,6 +854,7 @@ const fetchResponse = async (incomingChatDiv) => {
         form.reset(); 
         chatInput.style.height = "55px"; 
         chatContainer.style.paddingBottom = "150px"; 
+        // chatContainer.scrollTo(0, chatContainer.scrollHeight); 
         
         // fetch response from Llama2/CLIP 
         var response; 
