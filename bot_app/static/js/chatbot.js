@@ -918,7 +918,7 @@ const fetchResponse = async (incomingChatDiv) => {
         return ''; 
     }
 
-    // Remove the typing animation, append the paragraph element and save the chats to local storage
+    // remove the typing animation, append the paragraph element and save the chats to local storage
     incomingChatDiv.querySelector(".typing-animation").remove();
     incomingChatDiv.querySelector(".chat-details").appendChild(element);
     // localStorage.setItem("all-chats", chatContainer.innerHTML);
@@ -926,11 +926,10 @@ const fetchResponse = async (incomingChatDiv) => {
 }
 
 const copyResponse = (copyBtn) => {
-    // Copy the text content of the response to the clipboard 
-    var model = changeButton.getAttribute("data-info"); 
+    // copy the text content of the response to the clipboard 
     var responseElement; 
 
-    if (model === "llama") {
+    if (model.textContent !== "CLIP") {
         responseElement = copyBtn.parentElement.querySelector("p"); 
         navigator.clipboard.writeText(responseElement.textContent); 
     } else {
@@ -942,7 +941,7 @@ const copyResponse = (copyBtn) => {
 }
 
 const showTypingAnimation = () => {
-    // Display the typing animation and call the getChatResponse function
+    // display the typing animation and call the getChatResponse function
     //                         <img src="{% static 'chatbot.jpg' %}" alt="chatbot-img">
     // <img src="{% static 'images/chatbot.jpg' %}" alt="chatbot-img"></img>
     const html = `<div class="chat-content">
@@ -1091,10 +1090,19 @@ function closeModal() {
 function resizeTextarea(element) {
     console.log("change"); 
     element.style.height = "auto"; // Reset height to auto
-    element.style.height = (element.scrollHeight + 10) + "px"; // Set new height
+    element.style.height = (element.scrollHeight) + "px"; // Set new height
 
     const typingContainer = document.querySelector(".typing-container"); 
-    chatContainer.style.paddingBottom = Math.max(typingContainer.scrollHeight, 150) + "px"; 
+    console.log(typingContainer.scrollHeight); 
+
+    console.log(element.value); 
+
+    // adjust padding bottom 
+    if (element.value === "") {
+        chatContainer.style.paddingBottom = "150px"; 
+    } else {
+        chatContainer.style.paddingBottom = (typingContainer.scrollHeight + 74) + "px"; 
+    }
 
     chatContainer.scrollTo(0, chatContainer.scrollHeight); 
     // console.log(container.style.paddingBottom); 
