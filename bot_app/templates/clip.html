@@ -70,7 +70,8 @@
         <form method="post" id="form-query" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="typing-textarea">
-              <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here">
+              <!-- <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here"> -->
+              <textarea class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here" oninput="resizeTextarea(this)"></textarea>
               <input type="file" name="image" id="fileInput" accept="image/*">
               <span class="material-symbols-rounded" name="btnAsk" id="queryBtn" onclick="submitForm()">send</span>
               <button id="hiddenButton" type="submit" style="display: none;"></button>
@@ -79,8 +80,9 @@
         <div class="typing-controls">
           <span id="file-btn" class="material-symbols-rounded" onclick="triggerFileInput()">upload</span>
           <!-- <span id="theme-main-btn" class="material-symbols-rounded">light_mode</span> -->
-          <span id="delete-btn" class="material-symbols-rounded">delete</span>
+          <!-- <span id="delete-btn" class="material-symbols-rounded">delete</span> -->
           <!-- <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span> -->
+        </div>
       </div>
     </div>
 

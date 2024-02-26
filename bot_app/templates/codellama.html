@@ -79,15 +79,16 @@
         <form method="post" id="form-query">
             {% csrf_token %}
             <div class="typing-textarea">
-                <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here" required>
+                <!-- <input class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here" required> -->
+                <textarea class="chat-input" name="query" id="query-box" placeholder="Enter a prompt here" oninput="resizeTextarea(this)" required></textarea>
                 <span class="material-symbols-rounded" name="btnAsk" id="queryBtn" onclick="submitForm()">send</span>
                 <button id="hiddenButton" type="submit" style="display: none;"></button>
             </div>
         </form>
-        <div class="typing-controls">
-          <!-- <span id="theme-main-btn" class="material-symbols-rounded">light_mode</span> -->
+        <!-- <div class="typing-controls">
+          <span id="theme-main-btn" class="material-symbols-rounded">light_mode</span>
           <span id="delete-btn" class="material-symbols-rounded">delete</span>
-          <!-- <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span> -->
+          <span id="change-btn" class="material-symbols-rounded" data-info="llama">change_circle</span> -->
       </div>
     </div>
 
