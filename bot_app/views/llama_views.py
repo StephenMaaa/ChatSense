@@ -27,7 +27,7 @@ session = SessionStore(session_key=settings.SESSION_KEY)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # added to load gguf models
-llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama", max_new_tokens=1024, context_length = 4096, gpu_layers=200)
+llm = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="llama-2-7b-chat.Q4_K_M.gguf", model_type="llama", max_new_tokens=1024, context_length = 4096, gpu_layers=600)
 
 
 # # Displays the previous queries asked by the user.
