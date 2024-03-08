@@ -1,7 +1,8 @@
 # ChatSense - Llama 2 + Code Llama + CLIP based Chatbot 
 
 ## Demo 
-[![Video](thumbnail_url)](https://drive.google.com/file/d/1CrQVNktzy4yuc5fa-oJOpXrx1XphgZ1t/view?usp=sharing/preview)
+[![ChatSense Demo](https://res.cloudinary.com/marcomontalbano/image/upload/v1709860366/video_to_markdown/images/google-drive--1CrQVNktzy4yuc5fa-oJOpXrx1XphgZ1t-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://drive.google.com/file/d/1CrQVNktzy4yuc5fa-oJOpXrx1XphgZ1t/view?usp=sharing "ChatSense Demo")
+<!-- [![Video](thumbnail_url)](https://drive.google.com/file/d/1CrQVNktzy4yuc5fa-oJOpXrx1XphgZ1t/view?usp=sharing)  -->
 
 ## Features
 
