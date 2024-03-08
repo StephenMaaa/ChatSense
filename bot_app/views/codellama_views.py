@@ -24,7 +24,7 @@ session = SessionStore(session_key=settings.SESSION_KEY)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # added to load gguf models
-codellama = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="codellama-34b.Q5_K_M.gguf", model_type="llama", gpu_layers=0)
+codellama = AutoModelForCausalLM.from_pretrained("C:/Users/Stephen Ma/Desktop/Llama-2-Chatbot/", model_file="codellama-34b.Q5_K_M.gguf", model_type="llama", max_new_tokens=1024, context_length = 4096, gpu_layers=0)
 
 # Code Llama page 
 def codellamaHomepage(request):

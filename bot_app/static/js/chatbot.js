@@ -178,7 +178,7 @@ function deleteChatHistory(chatId) {
 
         // edge case: empty list 
         chatHistoryContainer.querySelectorAll(".date-category").forEach(div => {
-            if (div.nextSibling === null || div.nextSibling.classList.contains("date-category")) {
+            if (div.nextSibling.classList === undefined || div.nextSibling.classList.contains("date-category")) {
                 div.remove();   
             }
         }); 
